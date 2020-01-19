@@ -1,5 +1,8 @@
 {
     "database": {
-        "path": ":memory:"
+        "path": "foosman3.sqlite"
+    },
+    "api": {
+        "address": ":1323"
     }
 }

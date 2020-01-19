@@ -2,11 +2,11 @@ package core
 
 // Team represents a foosball team of two players
 type Team struct {
-	ID      int
-	Name    string
-	Player1 string
-	Player2 string
-	GroupID *int // ? replace with name ?
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Player1 string `json:"player1"`
+	Player2 string `json:"player2"`
+	GroupID *int   // ? replace with name ?
 }
 
 // Group represents a set of teams playing eachother in the groups stage
