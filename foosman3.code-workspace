@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "server"
+		},
+		{
+			"path": "foosman3ui"
 		}
 	],
 	"settings": {}

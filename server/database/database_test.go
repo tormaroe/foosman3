@@ -14,11 +14,16 @@ func TestInitDatabase(t *testing.T) {
 	defer d.Close()
 }
 
-func TestInsertTeam(t *testing.T) {
+func TestAddTeam(t *testing.T) {
 	d, _ := Init(":memory:")
 	defer d.Close()
 
-	err := d.SaveTeam(core.Team{Name: "Bob & Janet", Player1: "Bob", Player2: "Janet"})
+	err := d.AddTeam(1, core.Team{
+		Name:    "Bob & Janet",
+		Player1: "Bob",
+		Player2: "Janet",
+		Player3: "",
+	})
 	if err != nil {
 		t.Errorf("Error saving team: %s", err)
 	}
@@ -28,9 +33,11 @@ func TestUpdateTeam(t *testing.T) {
 	d, _ := Init(":memory:")
 	defer d.Close()
 
-	d.SaveTeam(core.Team{Name: "Bob & Janet", Player1: "Bob", Player2: "Janet"})
+	const tournamentID = 1
 
-	teams, _ := d.AllTeams()
+	d.AddTeam(tournamentID, core.Team{Name: "Bob & Janet", Player1: "Bob", Player2: "Janet"})
+
+	teams, _ := d.GetTournamentTeams(tournamentID)
 	team := teams[0]
 
 	if team.ID <= 0 {
@@ -41,12 +48,12 @@ func TestUpdateTeam(t *testing.T) {
 	team.Player1 = "Bob'er"
 	team.Player2 = "Janetz"
 
-	err := d.SaveTeam(team)
+	err := d.UpdateTeam(team)
 	if err != nil {
 		t.Errorf("Error updating team: %s", err)
 	}
 
-	teams, _ = d.AllTeams()
+	teams, _ = d.GetTournamentTeams(tournamentID)
 	if len(teams) != 1 {
 		t.Errorf("Expected one team, got %d", len(teams))
 	}
@@ -56,14 +63,14 @@ func TestUpdateTeam(t *testing.T) {
 	}
 }
 
-func TestGetAllTeams(t *testing.T) {
+func TestGetTournamentTeams(t *testing.T) {
 	d, _ := Init(":memory:")
 	defer d.Close()
 
-	d.SaveTeam(core.Team{Name: "Bob & Janet", Player1: "Bob", Player2: "Janet"})
-	d.SaveTeam(core.Team{Name: "Jack & Jill", Player1: "Jack", Player2: "Jill"})
+	d.AddTeam(1, core.Team{Name: "Bob & Janet", Player1: "Bob", Player2: "Janet"})
+	d.AddTeam(1, core.Team{Name: "Jack & Jill", Player1: "Jack", Player2: "Jill"})
 
-	teams, err := d.AllTeams()
+	teams, err := d.GetTournamentTeams(1)
 	if err != nil {
 		t.Errorf("Error getting teams: %s", err)
 	}

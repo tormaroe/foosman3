@@ -47,42 +47,7 @@ func (d *Database) isNew() (bool, error) {
 
 func (d *Database) createSchema() error {
 	log.Println("Creating database schema")
-
-	createStmt := `
-		create table team (
-			id       integer primary key AUTOINCREMENT,
-			name     text not null unique,
-			player_1 text not null,
-			player_2 text not null,
-			group_id integer
-		);
-		create table group (
-			id       integer primary key AUTOINCREMENT,
-			name	 text not null unique
-		);
-		create table match (
-			id       integer primary key AUTOINCREMENT,
-			created  integer(4) not null default (strftime('%s','now')),
-			team_1   integer not null,
-			team_2   integer not null,
-			group_id integer,
-			state    integer default 0 
-		);
-		create table result (
-			id       integer primary key AUTOINCREMENT,
-			created  integer(4) not null default (strftime('%s','now')),
-			team_id  integer not null,
-			match_id integer not null,
-			points   integer not null,
-			win      integer not null,
-		);
-		create table log (
-			id       integer primary key AUTOINCREMENT,
-			created  integer(4) not null default (strftime('%s','now')),
-			message  text not null
-		);
-	`
-	_, err := d.db.Exec(createStmt)
+	_, err := d.db.Exec(schema)
 	return err
 }
 
@@ -91,29 +56,107 @@ func (d *Database) Close() {
 	d.db.Close()
 }
 
-// SaveTeam updates a team. If Team.ID is 0, team is inserted.
-func (d *Database) SaveTeam(team core.Team) error {
-	if team.ID == 0 {
-		stmt, err := d.db.Prepare("insert into team(name, player_1, player_2) values(?, ?, ?)")
-		if err != nil {
-			return err
-		}
-		defer stmt.Close()
-		_, err = stmt.Exec(team.Name, team.Player1, team.Player2)
-		return err
-	}
-	stmt, err := d.db.Prepare("update team set name=?, player_1=?, player_2=? where id=?")
+// ----------------------------------------------------------------------------
+//
+//  INSERTS, UPDATES, and DELETES
+// ----------------------------------------------------------------------------
+
+// AddTournament saves a new Tournament entity
+func (d *Database) AddTournament(t core.Tournament) error {
+	stmt, err := d.db.Prepare(`
+		insert into tournament
+		(name, table_count, state)
+		values
+		(?, ?, ?)
+	`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(team.Name, team.Player1, team.Player2, team.ID)
+	_, err = stmt.Exec(t.Name, t.TableCount, core.New)
 	return err
 }
 
-// AllTeams gets all the teams from the database
-func (d *Database) AllTeams() ([]core.Team, error) {
-	rows, err := d.db.Query("select id, name, player_1, player_2 from team")
+// UpdateTournament saves changes to a Tournament entity
+func (d *Database) UpdateTournament(t core.Tournament) error {
+	stmt, err := d.db.Prepare(`
+		update tournament
+		set name=?, table_count=?, state=?
+		where id=?
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(t.Name, t.TableCount, t.State, t.ID)
+	return err
+}
+
+// AddTeam saves a new Team entity
+func (d *Database) AddTeam(tournamentID int, t core.Team) error {
+	stmt, err := d.db.Prepare(`
+		insert into team
+		(name, tournament_id, player_1, player_2, player_3) 
+		values
+		(?, ?, ?, ?, ?)
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(t.Name, tournamentID, t.Player1, t.Player2, t.Player3)
+	return err
+}
+
+// UpdateTeam saves changes to a Team entity
+func (d *Database) UpdateTeam(t core.Team) error {
+	stmt, err := d.db.Prepare(`
+		update team 
+		set name=?, player_1=?, player_2=?, player_3=? 
+		where id=?
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(t.Name, t.Player1, t.Player2, t.Player3, t.ID)
+	return err
+}
+
+// ----------------------------------------------------------------------------
+//
+//  QUERIES
+// ----------------------------------------------------------------------------
+
+// GetTournaments gets all the tournament entities
+func (d *Database) GetTournaments() ([]core.Tournament, error) {
+	rows, err := d.db.Query(`
+		select id, name, table_count, state
+		from tournament
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var result []core.Tournament
+	for rows.Next() {
+		var t core.Tournament
+		err = rows.Scan(&t.ID, &t.Name, &t.TableCount, &t.State)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, t)
+	}
+	return result, rows.Err()
+}
+
+// GetTournamentTeams gets all the teams for a Tournament from the database
+func (d *Database) GetTournamentTeams(ID int) ([]core.Team, error) {
+	rows, err := d.db.Query(`
+		select id, name, player_1, player_2, player_3
+		from team 
+		where tournament_id=?
+	`, ID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,7 +164,7 @@ func (d *Database) AllTeams() ([]core.Team, error) {
 	var result []core.Team
 	for rows.Next() {
 		var t core.Team
-		err = rows.Scan(&t.ID, &t.Name, &t.Player1, &t.Player2)
+		err = rows.Scan(&t.ID, &t.Name, &t.Player1, &t.Player2, &t.Player3)
 		if err != nil {
 			return nil, err
 		}
