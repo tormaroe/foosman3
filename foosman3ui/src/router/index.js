@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Admin from '../views/Admin.vue'
+import TournamentList from '../components/admin/TournamentList.vue'
+import TournamentAdmin from '../components/admin/Tournament.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +20,21 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    path: '/admin',
+    component: Admin,
+    children: [
+      {
+        path: '',
+        component: TournamentList
+      },
+      {
+        path: 'tournament/:id/',
+        component: TournamentAdmin,
+        props: true
+      }
+    ]
   }
 ]
 

@@ -1,14 +1,13 @@
 <template>
   <div>
-    TOUrnamentlist
+    <div>Admin</div>
+    <router-view />
   </div>
 </template>
 
 <script>
+
 export default {
-  name: 'TournamentList'
+  mounted: function () {}
 }
 </script>
-
-<style scoped>
-</style>

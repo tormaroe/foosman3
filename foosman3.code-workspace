@@ -7,5 +7,9 @@
 			"path": "foosman3ui"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"cSpell.words": [
+			"CORS"
+		]
+	}
 }

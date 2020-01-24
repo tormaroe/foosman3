@@ -24,6 +24,7 @@ func Init(e *echo.Echo, d *sql.DB) {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
 	// Routes
 
