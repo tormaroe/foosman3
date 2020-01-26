@@ -4,6 +4,8 @@
       Group count: {{ groups.length }}
       <button class="pure-button" @click="decGroupCount()">-</button>
       <button class="pure-button" @click="incGroupCount()">+</button>
+      |
+      <button class="pure-button" @click="distribute()">Auto distribute</button>
     </p>
     <div v-drag-and-drop:options="options" class="drag-wrapper">
       <div>
@@ -130,6 +132,19 @@ export default {
 
         console.dir(element.dataset.id)
       })
+    },
+    distribute: function () {
+      if (this.groups.length === 0) return
+
+      let gIdx = 0
+      while (this.availableTeams.length > 0) {
+        let team = this.availableTeams.shift()
+        this.groups[gIdx].teams.push(team)
+        gIdx++
+        if (gIdx >= this.groups.length) {
+          gIdx = 0
+        }
+      }
     }
   }
 }
@@ -147,12 +162,12 @@ ul {
   flex-direction: column;
   padding: 3px !important;
   min-height: 70vh;
-  width: 100px;
+  width: 110px;
   float:left;
   list-style-type:none;
   overflow-y:auto;
-  border:2px solid #888;
-  border-radius:0.2em;
+  border:1px solid #888;
+  border-radius:0.0em;
   background:#8adccc;
   color:#555;
   margin-right: 5px;
@@ -178,7 +193,7 @@ li {
   list-style-type:none;
   margin:0 0 2px 0;
   padding:0.2em 0.4em;
-  border-radius:0.2em;
+  border-radius:0.0em;
   line-height:1.3;
 }
 
