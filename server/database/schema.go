@@ -10,6 +10,7 @@ const schema = `
 	create table team (
 		id            integer primary key AUTOINCREMENT,
 		tournament_id integer not null,
+		group_id	  integer,
 		name          text not null,
 		player_1      text not null,
 		player_2      text not null,

@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "foosman3ui"
+		},
+		{
+			"path": "script"
 		}
 	],
 	"settings": {

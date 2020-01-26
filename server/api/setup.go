@@ -36,7 +36,7 @@ func Init(e *echo.Echo, d *sql.DB) {
 	e.POST("/tournaments", features.AddTournament)
 	e.PATCH("/tournaments", features.UpdateTournament)
 
-	e.GET("/tournaments/:id/teams", features.GetTeams)
+	e.GET("/tournaments/:id", features.GetTournamentByID)
 	e.POST("/tournaments/:id/teams", features.AddTeam)
 	e.PATCH("/tournaments/teams", features.UpdateTeam)
 	// TODO: Delete team. STATe requirements

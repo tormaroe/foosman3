@@ -35,6 +35,7 @@ func AddTeam(c echo.Context) error {
 
 // AddTeam saves a new Team entity
 func addTeam(d *core.FoosmanContext, tournamentID int, t addTeamRequest) error {
+	// TODO: Don't add if tournament has started
 	stmt, err := d.DB.Prepare(`
 		insert into team
 		(name, tournament_id, player_1, player_2, player_3) 
