@@ -18,6 +18,7 @@
     <groups
       v-if="mode === 'groups'"
       :tournament="tournament"
+      @save="groupsSave"
       />
 
     <div v-show="mode === 'default'" class="pure-g">
@@ -157,6 +158,10 @@ export default {
       }
       this.editForm.legend = 'Add a team'
       this.editForm.button = 'Add team'
+    },
+    groupsSave: async function (groups) {
+      await this.load()
+      this.mode = 'default'
     }
   }
 }

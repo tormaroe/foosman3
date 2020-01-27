@@ -6,6 +6,8 @@
       <button class="pure-button" @click="incGroupCount()">+</button>
       |
       <button class="pure-button" @click="distribute()">Auto distribute</button>
+      |
+      <button class="pure-button pure-button-primary" @click="save()">Save</button>
     </p>
     <div v-drag-and-drop:options="options" class="drag-wrapper">
       <div>
@@ -145,6 +147,13 @@ export default {
           gIdx = 0
         }
       }
+    },
+    save: function () {
+      const groupDtos = this.groups.map(g => ({
+        name: 'Group ' + g.groupLetter,
+        teams: g.teams.map(t => t.id) 
+      }))
+      this.$emit('save')
     }
   }
 }
