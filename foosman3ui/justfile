@@ -1,0 +1,5 @@
+build-image:
+    docker build . -t foosman3-ui
+
+run-image:
+    docker run -d -p 8080:80 foosman3-ui

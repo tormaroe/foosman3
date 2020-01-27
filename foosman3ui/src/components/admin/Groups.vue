@@ -81,8 +81,6 @@ export default {
     tournament: {
       immediate: true,
       handler (value) {
-        console.log('prop changed!')
-        console.dir(value)
         this.availableTeams = JSON.parse(JSON.stringify(value.teams))
         // TODO: Move grouped teams to groups...
       }
@@ -105,24 +103,19 @@ export default {
       this.availableTeams.push(...g.teams)
     },
     onGroupsChange: function (e) {
-      console.dir(e)
     },
     onDragend: function (e) {
-      console.dir(e)
-
       if (!e.droptarget) return
 
       e.items.forEach(element => {
         let team = null
         const elementID = parseInt(element.dataset.id)
-        console.log(`Move object id ${elementID}`)
 
         if (e.owner.dataset.group) {
           const teamIdx = this.groups[e.owner.dataset.idx].teams.findIndex(t => t.id === elementID)
           team = this.groups[e.owner.dataset.idx].teams.splice(teamIdx, 1)[0]
         } else {
           const teamIdx = this.availableTeams.findIndex(t => t.id === elementID)
-          console.log(`teamIdx=${teamIdx}, ${this.availableTeams[teamIdx]}`)
           team = this.availableTeams.splice(teamIdx, 1)[0]
         }
 
@@ -131,8 +124,6 @@ export default {
         } else {
           this.availableTeams.push(team)
         }
-
-        console.dir(element.dataset.id)
       })
     },
     distribute: function () {
@@ -151,9 +142,10 @@ export default {
     save: function () {
       const groupDtos = this.groups.map(g => ({
         name: 'Group ' + g.groupLetter,
-        teams: g.teams.map(t => t.id) 
+        teams: g.teams.map(t => t.id)
       }))
-      this.$emit('save')
+      // TODO
+      this.$emit('save', groupDtos)
     }
   }
 }
