@@ -1,0 +1,14 @@
+build-image:
+    docker build -t foosman3-server .
+
+build-network:
+    docker network create foosman3-net
+
+rm-network:
+    docker network rm foosman3-net
+
+run-image:
+    docker run -it --rm --network foosman3-net \
+        -p 1333:1323 \
+        --name foosman3-server-running \
+        foosman3-server
