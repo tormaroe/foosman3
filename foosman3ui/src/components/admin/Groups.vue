@@ -29,7 +29,7 @@
         :key="g.id"
       >
       <div>
-        <b>Group {{g.groupLetter}}</b><br>
+        <b>{{g.groupName}}</b><br>
         Count: {{g.teams.length}}
       </div>
       <ul
@@ -82,7 +82,13 @@ export default {
       immediate: true,
       handler (value) {
         this.availableTeams = JSON.parse(JSON.stringify(value.teams))
-        // TODO: Move grouped teams to groups...
+        value.groups.forEach(g => {
+          var group = {
+            groupName: g.name,
+            teams: this._.remove(this.availableTeams, t => t.groupId === g.id)
+          }
+          this.groups.push(group)
+        })
       }
     }
   },
@@ -90,8 +96,8 @@ export default {
     incGroupCount: function () {
       const groupNumber = this.groups.length + 1
       this.groups.push({
-        groupNumber: groupNumber,
-        groupLetter: numberToLetter(groupNumber),
+        // groupNumber: groupNumber,
+        groupName: 'Group ' + numberToLetter(groupNumber), // TODO: Potensial issue!!
         teams: []
       })
     },
@@ -141,7 +147,7 @@ export default {
     },
     save: async function () {
       const groupDtos = this.groups.map(g => ({
-        name: 'Group ' + g.groupLetter,
+        name: g.groupName,
         teams: g.teams.map(t => t.id)
       }))
       await this.axios.post(`http://localhost:1323/tournaments/${this.tournament.id}/groups`, groupDtos)

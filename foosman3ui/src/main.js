@@ -4,6 +4,7 @@ import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueDraggable from 'vue-draggable'
+import VueLodash from 'vue-lodash'
 import './lib/filters'
 
 Vue.config.productionTip = false
@@ -18,6 +19,8 @@ axios.interceptors.response.use(
 Vue.use(VueAxios, axios)
 
 Vue.use(VueDraggable)
+
+Vue.use(VueLodash)
 
 new Vue({
   router,

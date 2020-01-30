@@ -14,6 +14,7 @@ type getTournamentResponse struct {
 	TableCount int                  `json:"tableCount"`
 	State      core.TournamentState `json:"state"`
 	Teams      []teamDTO            `json:"teams"`
+	Groups     []groupDTO           `json:"groups"`
 }
 
 type teamDTO struct {
@@ -23,6 +24,11 @@ type teamDTO struct {
 	Player2 string `json:"player2"`
 	Player3 string `json:"player3"`
 	GroupID *int   `json:"groupId"`
+}
+
+type groupDTO struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // GetTournamentByID gets a Tournament by ID.
@@ -52,6 +58,9 @@ func getTournament(d *core.FoosmanContext, ID int) (getTournamentResponse, error
 	if err == nil && t.ID > 0 {
 		if teams, err := getTeams(d, ID); err == nil {
 			t.Teams = teams
+			if groups, err := getGroups(d, ID); err == nil {
+				t.Groups = groups
+			}
 		}
 	}
 	return t, err
@@ -76,6 +85,28 @@ func getTeams(d *core.FoosmanContext, ID int) ([]teamDTO, error) {
 			return nil, err
 		}
 		result = append(result, t)
+	}
+	return result, rows.Err()
+}
+
+func getGroups(d *core.FoosmanContext, ID int) ([]groupDTO, error) {
+	rows, err := d.DB.Query(`
+		select id, name
+		from [group]
+		where tournament_id=?
+	`, ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var result []groupDTO
+	for rows.Next() {
+		var g groupDTO
+		err = rows.Scan(&g.ID, &g.Name)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, g)
 	}
 	return result, rows.Err()
 }
