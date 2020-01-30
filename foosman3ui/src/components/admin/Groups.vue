@@ -139,13 +139,13 @@ export default {
         }
       }
     },
-    save: function () {
+    save: async function () {
       const groupDtos = this.groups.map(g => ({
         name: 'Group ' + g.groupLetter,
         teams: g.teams.map(t => t.id)
       }))
-      // TODO
-      this.$emit('save', groupDtos)
+      await this.axios.post(`http://localhost:1323/tournaments/${this.tournament.id}/groups`, groupDtos)
+      this.$emit('save')
     }
   }
 }

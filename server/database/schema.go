@@ -16,7 +16,7 @@ const schema = `
 		player_2      text not null,
 		player_3      text not null
 	);
-	create table group (
+	create table [group] (
 		id            integer primary key AUTOINCREMENT,
 		tournament_id integer not null,
 		name	      text not null unique
