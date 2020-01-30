@@ -14,6 +14,7 @@ type updateTournamentRequest struct {
 	TableCount int    `json:"tableCount"`
 }
 
+// UpdateTournament will update a tournament.
 func UpdateTournament(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournament := new(updateTournamentRequest)

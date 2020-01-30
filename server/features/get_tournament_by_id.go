@@ -25,6 +25,8 @@ type teamDTO struct {
 	GroupID *int   `json:"groupId"`
 }
 
+// GetTournamentByID gets a Tournament by ID.
+// Response contains a list of all teams.
 func GetTournamentByID(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournamentID, err := ac.GetParamID()

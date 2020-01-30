@@ -13,6 +13,7 @@ type addTournamentRequest struct {
 	TableCount int    `json:"tableCount"`
 }
 
+// AddTournament creates a new Tournament
 func AddTournament(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournament := new(addTournamentRequest)

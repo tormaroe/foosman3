@@ -17,6 +17,11 @@ type setGroupsRequest struct {
 	Groups []groupDefinition `json:"groups"`
 }
 
+// SetGroups defines the groups for a Tournament.
+// It should be provided a list of groups. Each group
+// has a name and a list of Team IDs belonging to that group.
+// Any pre-existing group structure for the Tournament in question
+// is completely replaced.
 func SetGroups(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournamentID, err := ac.GetParamID()
@@ -30,15 +35,14 @@ func SetGroups(c echo.Context) error {
 	// TODO: Transaction
 	err = deleteAllGroups(ac, tournamentID)
 	for _, g := range req.Groups {
-		if gID, err := makeGroup(ac, tournamentID, g.Name); err != nil {
+		gID, err := makeGroup(ac, tournamentID, g.Name)
+		if err != nil {
 			return err
-		} else {
-			if err = setTeamsGroup(ac, gID, g.TeamIDs); err != nil {
-				return err
-			}
+		}
+		if err = setTeamsGroup(ac, gID, g.TeamIDs); err != nil {
+			return err
 		}
 	}
-
 	return c.NoContent(http.StatusOK)
 }
 

@@ -16,6 +16,7 @@ type updateTeamRequest struct {
 	Player3 string `json:"player3"`
 }
 
+// UpdateTeam will update an existing Team (name and players).
 func UpdateTeam(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	team := new(updateTeamRequest)

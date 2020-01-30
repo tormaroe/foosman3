@@ -15,6 +15,7 @@ type addTeamRequest struct {
 	Player3 string `json:"player3"`
 }
 
+// AddTeam creates a new Team and adds it to an existing Tournament.
 func AddTeam(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournamentID, err := ac.GetParamID()
