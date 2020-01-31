@@ -1,0 +1,10 @@
+version: "3"
+services:
+    backend:
+        image: "tormaroe/foosman3-server:latest"
+        ports: 
+            - "1323:1323"
+    frontend:
+        image: "tormaroe/foosman3-ui:latest"
+        ports: 
+            - "8080:80"
