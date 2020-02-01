@@ -1,9 +1,9 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/tormaroe/foosman3/server/core"
@@ -11,7 +11,7 @@ import (
 )
 
 // Init adds middlewares and all API routes to Echo
-func Init(e *echo.Echo, d *sql.DB) {
+func Init(e *echo.Echo, d *gorm.DB) {
 
 	// Middleware
 

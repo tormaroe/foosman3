@@ -15,7 +15,8 @@
 	],
 	"settings": {
 		"cSpell.words": [
-			"CORS"
+			"CORS",
+			"gorm"
 		]
 	}
 }

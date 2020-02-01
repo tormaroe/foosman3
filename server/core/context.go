@@ -1,17 +1,17 @@
 package core
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
 type FoosmanContext struct {
 	echo.Context
-	DB *sql.DB
+	DB *gorm.DB
 }
 
 func (ac *FoosmanContext) GetParamID() (int, error) {

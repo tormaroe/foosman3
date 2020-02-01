@@ -6,30 +6,8 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
+	"github.com/tormaroe/foosman3/server/database"
 )
-
-type getTournamentResponse struct {
-	ID         int                  `json:"id"`
-	Name       string               `json:"name"`
-	TableCount int                  `json:"tableCount"`
-	State      core.TournamentState `json:"state"`
-	Teams      []teamDTO            `json:"teams"`
-	Groups     []groupDTO           `json:"groups"`
-}
-
-type teamDTO struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Player1 string `json:"player1"`
-	Player2 string `json:"player2"`
-	Player3 string `json:"player3"`
-	GroupID *int   `json:"groupId"`
-}
-
-type groupDTO struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
 
 // GetTournamentByID gets a Tournament by ID.
 // Response contains a list of all teams.
@@ -47,66 +25,23 @@ func GetTournamentByID(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, t, "  ")
 }
 
-func getTournament(d *core.FoosmanContext, ID int) (getTournamentResponse, error) {
-	row := d.DB.QueryRow(`
-		select id, name, table_count, state
-		from tournament
-		where id=?
-	`, ID)
-	var t getTournamentResponse
-	err := row.Scan(&t.ID, &t.Name, &t.TableCount, &t.State)
-	if err == nil && t.ID > 0 {
-		if teams, err := getTeams(d, ID); err == nil {
-			t.Teams = teams
-			if groups, err := getGroups(d, ID); err == nil {
-				t.Groups = groups
-			}
-		}
+func getTournament(d *core.FoosmanContext, ID int) (database.Tournament, error) {
+	var t database.Tournament
+	if err := d.DB.First(&t, ID).Error; err != nil {
+		return t, err
 	}
-	return t, err
-}
 
-// getTeams gets all the teams for a Tournament from the database
-func getTeams(d *core.FoosmanContext, ID int) ([]teamDTO, error) {
-	rows, err := d.DB.Query(`
-		select id, name, player_1, player_2, player_3, group_id
-		from team 
-		where tournament_id=?
-	`, ID)
-	if err != nil {
-		log.Fatal(err)
+	var teams []database.Team
+	if err := d.DB.Model(&t).Related(&teams).Error; err != nil {
+		return t, err
 	}
-	defer rows.Close()
-	var result []teamDTO
-	for rows.Next() {
-		var t teamDTO
-		err = rows.Scan(&t.ID, &t.Name, &t.Player1, &t.Player2, &t.Player3, &t.GroupID)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, t)
-	}
-	return result, rows.Err()
-}
+	t.Teams = teams
 
-func getGroups(d *core.FoosmanContext, ID int) ([]groupDTO, error) {
-	rows, err := d.DB.Query(`
-		select id, name
-		from [group]
-		where tournament_id=?
-	`, ID)
-	if err != nil {
-		log.Fatal(err)
+	var groups []database.Group
+	if err := d.DB.Model(&t).Related(&groups).Error; err != nil {
+		return t, err
 	}
-	defer rows.Close()
-	var result []groupDTO
-	for rows.Next() {
-		var g groupDTO
-		err = rows.Scan(&g.ID, &g.Name)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, g)
-	}
-	return result, rows.Err()
+	t.Groups = groups
+
+	return t, nil
 }

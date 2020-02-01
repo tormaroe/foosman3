@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
+	"github.com/tormaroe/foosman3/server/database"
 )
 
 type updateTournamentRequest struct {
@@ -31,15 +32,12 @@ func UpdateTournament(c echo.Context) error {
 
 // UpdateTournament saves changes to a Tournament entity
 func updateTournament(d *core.FoosmanContext, t updateTournamentRequest) error {
-	stmt, err := d.DB.Prepare(`
-		update tournament
-		set name=?, table_count=?
-		where id=?
-	`)
-	if err != nil {
+	var tournament database.Tournament
+	if err := d.DB.First(&tournament, t.ID).Error; err != nil {
 		return err
 	}
-	defer stmt.Close()
-	_, err = stmt.Exec(t.Name, t.TableCount, t.ID)
-	return err
+	return d.DB.Model(&tournament).Updates(map[string]interface{}{
+		"name":        t.Name,
+		"table_count": t.TableCount,
+	}).Error
 }

@@ -2,20 +2,16 @@ package features
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
+	"github.com/tormaroe/foosman3/server/database"
 )
 
 type groupDefinition struct {
 	Name    string `json:"name"`
 	TeamIDs []int  `json:"teams"`
 }
-
-// type setGroupsRequest struct {
-// 	Groups []groupDefinition `json:"groups"`
-// }
 
 // SetGroups defines the groups for a Tournament.
 // It should be provided a list of groups. Each group
@@ -47,74 +43,27 @@ func SetGroups(c echo.Context) error {
 }
 
 func deleteAllGroups(d *core.FoosmanContext, tournamentID int) error {
-	stmt, err := d.DB.Prepare(`
-		update team
-		set group_id = null
-		where tournament_id = ?
-	`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(tournamentID)
+	err := d.DB.Model(&database.Team{}).Where("tournament_id = ?", tournamentID).Update("group_id", nil).Error
 	if err != nil {
 		return err
 	}
 
-	stmt2, err := d.DB.Prepare(`
-		delete from [group]
-		where tournament_id = ?
-	`)
-	if err != nil {
-		return err
-	}
-	defer stmt2.Close()
-	_, err = stmt2.Exec(tournamentID)
-	return err
+	return d.DB.Delete(&database.Group{}, "tournament_id", tournamentID).Error
 }
 
 func makeGroup(d *core.FoosmanContext, tournamentID int, name string) (int, error) {
-	stmt, err := d.DB.Prepare(`
-		insert into [group]
-		(tournament_id, name)
-		values
-		(?, ?)
-	`)
-	if err != nil {
-		return -1, err
+	var tournament database.Tournament
+	if err := d.DB.First(&tournament, tournamentID).Error; err != nil {
+		return 0, err
 	}
-	defer stmt.Close()
-	_, err = stmt.Exec(tournamentID, name)
-	if err != nil {
-		return -1, err
+	group := database.Group{
+		Name:       name,
+		Tournament: tournament,
 	}
-
-	row := d.DB.QueryRow(`
-		select id
-		from [group]
-		where tournament_id=? and name=?
-	`, tournamentID, name)
-	var newID int
-	err = row.Scan(&newID)
-	return newID, err
+	err := d.DB.Create(&group).Error
+	return group.ID, err
 }
 
 func setTeamsGroup(d *core.FoosmanContext, groupID int, teamIDs []int) error {
-	stmt, err := d.DB.Prepare(`
-		update team
-		set group_id = ?
-		where id in (?` + strings.Repeat(",?", len(teamIDs)-1) + ")")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	args := []interface{}{groupID}
-	teamIDsSlice := make([]interface{}, len(teamIDs))
-	for i := range teamIDs {
-		teamIDsSlice[i] = teamIDs[i]
-	}
-	args = append(args, teamIDsSlice...)
-
-	_, err = stmt.Exec(args...)
-	return err
+	return d.DB.Model(&database.Team{}).Where("id IN (?)", teamIDs).Update("group_id", groupID).Error
 }

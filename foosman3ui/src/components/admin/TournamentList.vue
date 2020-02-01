@@ -30,7 +30,7 @@
           <form class="pure-form pure-form-stacked">
             <fieldset>
               <legend>Add a tournament</legend>
-              <label>Team name</label>
+              <label>Tournament name</label>
               <input type="text" placeholder="Name" v-model="newTournament.name">
               <button
                 type="button"

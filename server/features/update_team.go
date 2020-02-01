@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
+	"github.com/tormaroe/foosman3/server/database"
 )
 
 type updateTeamRequest struct {
@@ -33,15 +34,11 @@ func UpdateTeam(c echo.Context) error {
 
 // UpdateTeam saves changes to a Team entity
 func updateTeam(d *core.FoosmanContext, t updateTeamRequest) error {
-	stmt, err := d.DB.Prepare(`
-		update team 
-		set name=?, player_1=?, player_2=?, player_3=? 
-		where id=?
-	`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(t.Name, t.Player1, t.Player2, t.Player3, t.ID)
-	return err
+	var team database.Team
+	return d.DB.First(&team, t.ID).Updates(map[string]interface{}{
+		"name":    t.Name,
+		"player1": t.Player1,
+		"player2": t.Player2,
+		"player3": t.Player3,
+	}).Error
 }

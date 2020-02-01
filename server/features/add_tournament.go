@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
+	"github.com/tormaroe/foosman3/server/database"
 )
 
 type addTournamentRequest struct {
@@ -30,16 +31,9 @@ func AddTournament(c echo.Context) error {
 
 // AddTournament saves a new Tournament entity
 func addTournament(d *core.FoosmanContext, t addTournamentRequest) error {
-	stmt, err := d.DB.Prepare(`
-		insert into tournament
-		(name, table_count, state)
-		values
-		(?, ?, ?)
-	`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(t.Name, t.TableCount, core.New)
-	return err
+	return d.DB.Create(&database.Tournament{
+		Name:       t.Name,
+		TableCount: t.TableCount,
+		State:      int(core.New),
+	}).Error
 }

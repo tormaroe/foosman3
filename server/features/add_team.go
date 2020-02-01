@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
+	"github.com/tormaroe/foosman3/server/database"
 )
 
 type addTeamRequest struct {
@@ -37,16 +38,16 @@ func AddTeam(c echo.Context) error {
 // AddTeam saves a new Team entity
 func addTeam(d *core.FoosmanContext, tournamentID int, t addTeamRequest) error {
 	// TODO: Don't add if tournament has started
-	stmt, err := d.DB.Prepare(`
-		insert into team
-		(name, tournament_id, player_1, player_2, player_3) 
-		values
-		(?, ?, ?, ?, ?)
-	`)
-	if err != nil {
+	var tournament database.Tournament
+	if err := d.DB.First(&tournament, tournamentID).Error; err != nil {
 		return err
 	}
-	defer stmt.Close()
-	_, err = stmt.Exec(t.Name, tournamentID, t.Player1, t.Player2, t.Player3)
-	return err
+
+	return d.DB.Create(&database.Team{
+		Name:       t.Name,
+		Tournament: tournament,
+		Player1:    t.Player1,
+		Player2:    t.Player2,
+		Player3:    t.Player3,
+	}).Error
 }
