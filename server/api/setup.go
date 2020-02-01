@@ -39,6 +39,7 @@ func Init(e *echo.Echo, d *gorm.DB) {
 	e.GET("/tournaments/:id", features.GetTournamentByID)
 	e.POST("/tournaments/:id/teams", features.AddTeam)
 	e.PATCH("/tournaments/teams", features.UpdateTeam)
+	e.DELETE("/tournaments/teams/:id", features.DeleteTeam)
 	e.POST("/tournaments/:id/groups", features.SetGroups)
 	// TODO: Delete team. STATe requirements
 }

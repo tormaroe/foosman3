@@ -41,7 +41,9 @@
               <td>{{ t.player2 }}</td>
               <td>{{ t.player3 }}</td>
               <td style="text-align:right">
-                <button @click="selectTeam(t)" class="pure-button">→</button>
+                <button @click="selectTeam(t)" class="pure-button" title="Edit team">→</button>
+                &nbsp;
+                <button @click="deleteTeam(t)" class="pure-button" title="Delete team">x</button>
               </td>
             </tr>
           </tbody>
@@ -158,6 +160,12 @@ export default {
       }
       this.editForm.legend = 'Add a team'
       this.editForm.button = 'Add team'
+    },
+    deleteTeam: async function (t) {
+      if (confirm(`Delete ${t.name} for sure?`)) {
+        await this.axios.delete(`http://localhost:1323/tournaments/teams/${t.id}`)
+        await this.load()
+      }
     },
     groupsSave: async function (groups) {
       await this.load()
