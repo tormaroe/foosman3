@@ -3,6 +3,7 @@ package features
 import (
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
 	"github.com/tormaroe/foosman3/server/database"
@@ -28,42 +29,47 @@ func SetGroups(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-	// TODO: Transaction
-	err = deleteAllGroups(ac, tournamentID)
-	for _, g := range *req {
-		gID, err := makeGroup(ac, tournamentID, g.Name)
-		if err != nil {
-			return err
+
+	if err := ac.DB.Transaction(func(tx *gorm.DB) error {
+		err = deleteAllGroups(tx, tournamentID)
+		for _, g := range *req {
+			gID, err := makeGroup(tx, tournamentID, g.Name)
+			if err != nil {
+				return err
+			}
+			if err = setTeamsGroup(tx, gID, g.TeamIDs); err != nil {
+				return err
+			}
 		}
-		if err = setTeamsGroup(ac, gID, g.TeamIDs); err != nil {
-			return err
-		}
+		return nil
+	}); err != nil {
+		return err
 	}
 	return c.NoContent(http.StatusOK)
 }
 
-func deleteAllGroups(d *core.FoosmanContext, tournamentID int) error {
-	err := d.DB.Model(&database.Team{}).Where("tournament_id = ?", tournamentID).Update("group_id", nil).Error
+func deleteAllGroups(tx *gorm.DB, tournamentID int) error {
+	err := tx.Model(&database.Team{}).Where("tournament_id = ?", tournamentID).Update("group_id", nil).Error
 	if err != nil {
 		return err
 	}
 
-	return d.DB.Delete(&database.Group{}, "tournament_id", tournamentID).Error
+	return tx.Delete(&database.Group{}, "tournament_id", tournamentID).Error
 }
 
-func makeGroup(d *core.FoosmanContext, tournamentID int, name string) (int, error) {
+func makeGroup(tx *gorm.DB, tournamentID int, name string) (int, error) {
 	var tournament database.Tournament
-	if err := d.DB.First(&tournament, tournamentID).Error; err != nil {
+	if err := tx.First(&tournament, tournamentID).Error; err != nil {
 		return 0, err
 	}
 	group := database.Group{
 		Name:       name,
 		Tournament: tournament,
 	}
-	err := d.DB.Create(&group).Error
+	err := tx.Create(&group).Error
 	return group.ID, err
 }
 
-func setTeamsGroup(d *core.FoosmanContext, groupID int, teamIDs []int) error {
-	return d.DB.Model(&database.Team{}).Where("id IN (?)", teamIDs).Update("group_id", groupID).Error
+func setTeamsGroup(tx *gorm.DB, groupID int, teamIDs []int) error {
+	return tx.Model(&database.Team{}).Where("id IN (?)", teamIDs).Update("group_id", groupID).Error
 }
