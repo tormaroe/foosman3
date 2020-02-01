@@ -1,7 +1,6 @@
 package features
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -22,13 +21,8 @@ func DeleteTeam(c echo.Context) error {
 		return err
 	}
 
-	var tournament database.Tournament
-	if err := ac.DB.First(&tournament, team.TournamentID).Error; err != nil {
+	if err := ac.AssertTournamentNotStarted(team.TournamentID); err != nil {
 		return err
-	}
-
-	if tournament.State != int(core.New) {
-		return errors.New("Can't delete team from a tournament that has started")
 	}
 
 	if err := ac.DB.Delete(&team).Error; err != nil {

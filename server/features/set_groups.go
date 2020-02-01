@@ -25,6 +25,11 @@ func SetGroups(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	if err := ac.AssertTournamentNotStarted(tournamentID); err != nil {
+		return err
+	}
+
 	req := new([]groupDefinition)
 	if err := c.Bind(req); err != nil {
 		return err

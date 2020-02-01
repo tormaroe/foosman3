@@ -23,11 +23,18 @@ func AddTeam(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	if err := ac.AssertTournamentNotStarted(tournamentID); err != nil {
+		return err
+	}
+
 	team := new(addTeamRequest)
 	if err := c.Bind(team); err != nil {
 		return err
 	}
+
 	// TODO: Validate input
+
 	log.Printf("About to save team '%s'", team.Name)
 	if err := addTeam(ac, tournamentID, *team); err != nil {
 		return err
@@ -37,7 +44,6 @@ func AddTeam(c echo.Context) error {
 
 // AddTeam saves a new Team entity
 func addTeam(d *core.FoosmanContext, tournamentID int, t addTeamRequest) error {
-	// TODO: Don't add if tournament has started
 	var tournament database.Tournament
 	if err := d.DB.First(&tournament, tournamentID).Error; err != nil {
 		return err
