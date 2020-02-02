@@ -29,6 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+	db.LogMode(true) // TODO: Remove this later
 
 	e := echo.New()
 	api.Init(e, db)

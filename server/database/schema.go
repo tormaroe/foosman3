@@ -4,7 +4,7 @@ type Tournament struct {
 	ID         int     `json:"id"`
 	Name       string  `json:"name"`
 	TableCount int     `gorm:"DEFAULT:0" json:"tableCount"`
-	State      int     `gorm:"DEFAULT:0" json:"state"`
+	State      int     `gorm:"DEFAULT:0" json:"state"` // TODO: use typed constant?
 	Teams      []Team  `json:"teams"`
 	Groups     []Group `json:"groups"`
 }
@@ -27,27 +27,19 @@ type Group struct {
 	TournamentID int `json:"tournamentId"`
 }
 
+type Match struct {
+	ID      int `json:"id"`
+	Team1   Team
+	Team1ID int `json:"team1_id"`
+	Team2   Team
+	Team2ID int `json:"team2_id"`
+	// ??? Add tournament ID
+	GroupID int    `json:"groupId"`
+	Table   string `json:"table"`
+	State   int    `json:"state"` // TODO: use typed constant?
+}
+
 // const schema = `
-// 	create table tournament (
-// 		id            integer primary key AUTOINCREMENT,
-// 		name          text not null unique,
-// 		table_count   integer default 0,
-// 		state		  integer default 0
-// 	);
-// 	create table team (
-// 		id            integer primary key AUTOINCREMENT,
-// 		tournament_id integer not null,
-// 		group_id	  integer,
-// 		name          text not null,
-// 		player_1      text not null,
-// 		player_2      text not null,
-// 		player_3      text not null
-// 	);
-// 	create table [group] (
-// 		id            integer primary key AUTOINCREMENT,
-// 		tournament_id integer not null,
-// 		name	      text not null unique
-// 	);
 // 	create table match (
 // 		id            integer primary key AUTOINCREMENT,
 // 		created       integer(4) not null default (strftime('%s','now')),

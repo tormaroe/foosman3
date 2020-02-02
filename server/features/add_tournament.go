@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
 	"github.com/tormaroe/foosman3/server/database"
@@ -23,15 +24,15 @@ func AddTournament(c echo.Context) error {
 	}
 	// TODO: Validate input
 	log.Printf("About to save tournament '%s'", tournament.Name)
-	if err := addTournament(ac, *tournament); err != nil {
+	if err := addTournament(ac.DB, *tournament); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)
 }
 
 // AddTournament saves a new Tournament entity
-func addTournament(d *core.FoosmanContext, t addTournamentRequest) error {
-	return d.DB.Create(&database.Tournament{
+func addTournament(db *gorm.DB, t addTournamentRequest) error {
+	return db.Create(&database.Tournament{
 		Name:       t.Name,
 		TableCount: t.TableCount,
 		State:      int(core.New),
