@@ -7,11 +7,10 @@
       class="pure-button pure-button-primary"
       style="float: right;margin-left:5px;">Teams</button>
     <button
-      v-show="mode !== 'matches'"
       type="button"
-      @click="mode = 'matches'"
+      @click="startTournament"
       class="pure-button pure-button-primary"
-      style="float: right;margin-left:5px;">Matches</button>
+      style="float: right;margin-left:5px;">START TOURNAMENT</button>
     <button
       v-show="mode !== 'groups'"
       type="button"
@@ -25,11 +24,6 @@
       v-if="mode === 'groups'"
       :tournament="tournament"
       @save="groupsSave"
-      />
-
-    <matches
-      v-if="mode === 'matches'"
-      :tournament="tournament"
       />
 
     <div v-show="mode === 'default'" class="pure-g">
@@ -94,12 +88,10 @@
 
 <script>
 import Groups from './Groups.vue'
-import Matches from './Matches.vue'
 
 export default {
   components: {
-    Groups,
-    Matches
+    Groups
   },
   props: {
     id: {
@@ -183,6 +175,13 @@ export default {
     groupsSave: async function (groups) {
       await this.load()
       this.mode = 'default'
+    },
+    startTournament: async function () {
+      if (confirm('Are all teams registered and placed in groups? Then you may start the tournament..')) {
+        await this.axios.post(`http://localhost:1323/tournaments/${this.id}/start`)
+        alert('Tournament started')
+        this.$router.push({ path: `/tournament/${this.id}` })
+      }
     }
   }
 }

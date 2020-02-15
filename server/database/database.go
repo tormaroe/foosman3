@@ -4,6 +4,8 @@ import (
 	"log"
 
 	"github.com/jinzhu/gorm"
+
+	// Importing SQLite driver
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -13,7 +15,7 @@ func Init(path string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&Tournament{}, &Team{}, &Group{}, &Match{})
+	db.AutoMigrate(&Tournament{}, &Team{}, &Group{}, &Match{}, &MatchResult{})
 	log.Println("Database initialized")
 	return db, err
 }

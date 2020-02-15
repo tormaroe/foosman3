@@ -17,7 +17,7 @@ func Init(e *echo.Echo, d *gorm.DB) {
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			cc := &core.FoosmanContext{c, d}
+			cc := &core.FoosmanContext{Context: c, DB: d}
 			return next(cc)
 		}
 	})
@@ -42,8 +42,8 @@ func Init(e *echo.Echo, d *gorm.DB) {
 	e.DELETE("/tournaments/teams/:id", features.DeleteTeam)
 	e.POST("/tournaments/:id/groups", features.SetGroups)
 
-	e.POST("/tournaments/:id/generate-matches", features.GenerateMatches)
-	e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
+	e.POST("/tournaments/:id/start", features.StartTournament)
+	// e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
 
 	e.GET("/teams/:id", features.GetTeam)
 }

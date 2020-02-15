@@ -39,6 +39,16 @@ type Match struct {
 	State   int    `json:"state"` // TODO: use typed constant?
 }
 
+type MatchResult struct {
+	ID      int
+	TeamID  int
+	MatchID int
+	Points  int
+	Win     bool
+	Loss    bool
+	Draw    bool
+}
+
 // const schema = `
 // 	create table match (
 // 		id            integer primary key AUTOINCREMENT,

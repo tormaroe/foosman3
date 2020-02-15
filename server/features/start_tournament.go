@@ -9,8 +9,8 @@ import (
 	"github.com/tormaroe/foosman3/server/database"
 )
 
-// GenerateMatches ..
-func GenerateMatches(c echo.Context) error {
+// StartTournament ..
+func StartTournament(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournamentID, err := ac.GetParamID()
 	if err != nil {
@@ -50,7 +50,7 @@ func generateMatches(t database.Tournament) func(*gorm.DB) error {
 			}
 		}
 
-		t.State = int(core.MatchesPlanned)
+		t.State = int(core.GroupPlayStarted)
 		tx.Save(&t)
 
 		return nil
@@ -66,11 +66,34 @@ func generateGroupMatches(tx *gorm.DB, g database.Group) error {
 	// Create matches for all permutations
 	for i := 0; i < len(teams)-1; i++ {
 		for j := i + 1; j < len(teams); j++ {
-			if err := tx.Create(&database.Match{
+			match := database.Match{
 				GroupID: g.ID,
 				Team1ID: teams[i].ID,
 				Team2ID: teams[j].ID,
 				State:   int(core.Planned),
+			}
+			if err := tx.Create(&match).Error; err != nil {
+				return err
+			}
+
+			if err := tx.Create(&database.MatchResult{
+				TeamID:  teams[i].ID,
+				MatchID: match.ID,
+				Points:  0,
+				Win:     false,
+				Loss:    false,
+				Draw:    false,
+			}).Error; err != nil {
+				return err
+			}
+
+			if err := tx.Create(&database.MatchResult{
+				TeamID:  teams[j].ID,
+				MatchID: match.ID,
+				Points:  0,
+				Win:     false,
+				Loss:    false,
+				Draw:    false,
 			}).Error; err != nil {
 				return err
 			}
