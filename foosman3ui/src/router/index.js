@@ -1,6 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
 import Home from '../views/Home.vue'
+import PublicTournamentList from '../components/PublicTournamentList.vue'
+import PublicTournament from '../components/PublicTournament.vue'
+import PublicGroup from '../components/PublicGroup.vue'
+import PublicTeam from '../components/PublicTeam.vue'
+
 import Admin from '../views/Admin.vue'
 import TournamentList from '../components/admin/TournamentList.vue'
 import TournamentAdmin from '../components/admin/Tournament.vue'
@@ -10,8 +16,28 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home
+    component: Home,
+    children: [
+      {
+        path: '',
+        component: PublicTournamentList
+      },
+      {
+        path: 'tournament/:id',
+        component: PublicTournament,
+        props: true
+      },
+      {
+        path: 'group/:id',
+        component: PublicGroup,
+        props: true
+      },
+      {
+        path: 'team/:id',
+        component: PublicTeam,
+        props: true
+      }
+    ]
   },
   {
     path: '/admin',

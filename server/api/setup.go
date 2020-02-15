@@ -44,4 +44,6 @@ func Init(e *echo.Echo, d *gorm.DB) {
 
 	e.POST("/tournaments/:id/generate-matches", features.GenerateMatches)
 	e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
+
+	e.GET("/teams/:id", features.GetTeam)
 }
