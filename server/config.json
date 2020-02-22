@@ -4,5 +4,8 @@
     },
     "api": {
         "address": ":1323"
+    },
+    "instrumentation": {
+        "dbLogMode": true
     }
 }

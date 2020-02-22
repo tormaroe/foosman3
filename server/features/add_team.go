@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
 	"github.com/tormaroe/foosman3/server/database"
@@ -24,7 +25,7 @@ func AddTeam(c echo.Context) error {
 		return err
 	}
 
-	if err := ac.AssertTournamentNotStarted(tournamentID); err != nil {
+	if err := database.AssertTournamentNotStarted(ac, tournamentID); err != nil {
 		return err
 	}
 
@@ -36,20 +37,20 @@ func AddTeam(c echo.Context) error {
 	// TODO: Validate input
 
 	log.Printf("About to save team '%s'", team.Name)
-	if err := addTeam(ac, tournamentID, *team); err != nil {
+	if err := addTeam(ac.DB, tournamentID, *team); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)
 }
 
 // AddTeam saves a new Team entity
-func addTeam(d *core.FoosmanContext, tournamentID int, t addTeamRequest) error {
+func addTeam(db *gorm.DB, tournamentID int, t addTeamRequest) error {
 	var tournament database.Tournament
-	if err := d.DB.First(&tournament, tournamentID).Error; err != nil {
+	if err := db.First(&tournament, tournamentID).Error; err != nil {
 		return err
 	}
 
-	return d.DB.Create(&database.Team{
+	return db.Create(&database.Team{
 		Name:       t.Name,
 		Tournament: tournament,
 		Player1:    t.Player1,

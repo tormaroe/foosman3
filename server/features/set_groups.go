@@ -26,7 +26,7 @@ func SetGroups(c echo.Context) error {
 		return err
 	}
 
-	if err := ac.AssertTournamentNotStarted(tournamentID); err != nil {
+	if err := database.AssertTournamentNotStarted(ac, tournamentID); err != nil {
 		return err
 	}
 
@@ -34,9 +34,17 @@ func SetGroups(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return err
 	}
+	if err := setGroups(ac.DB, tournamentID, req); err != nil {
+		return err
+	}
+	return c.NoContent(http.StatusOK)
+}
 
-	if err := ac.DB.Transaction(func(tx *gorm.DB) error {
-		err = deleteAllGroups(tx, tournamentID)
+func setGroups(db *gorm.DB, tournamentID int, req *[]groupDefinition) error {
+	if err := db.Transaction(func(tx *gorm.DB) error {
+		if err := deleteAllGroups(tx, tournamentID); err != nil {
+			return err
+		}
 		for _, g := range *req {
 			gID, err := makeGroup(tx, tournamentID, g.Name)
 			if err != nil {
@@ -50,7 +58,7 @@ func SetGroups(c echo.Context) error {
 	}); err != nil {
 		return err
 	}
-	return c.NoContent(http.StatusOK)
+	return nil
 }
 
 func deleteAllGroups(tx *gorm.DB, tournamentID int) error {

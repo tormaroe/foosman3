@@ -17,7 +17,7 @@ func StartTournament(c echo.Context) error {
 		return err
 	}
 
-	if err := ac.AssertTournamentNotStarted(tournamentID); err != nil {
+	if err := database.AssertTournamentNotStarted(ac, tournamentID); err != nil {
 		return err
 	}
 
@@ -37,6 +37,9 @@ func StartTournament(c echo.Context) error {
 	if err := ac.DB.Transaction(generateMatches(t)); err != nil {
 		return err
 	}
+
+	done := database.ScheduleUpcoming(ac, t.ID, t.TableCount+t.TableCount/2) // TODO: Configurable??
+	done.Wait()                                                              // Block until initial scheduling done
 
 	return c.NoContent(http.StatusOK)
 }
@@ -67,10 +70,11 @@ func generateGroupMatches(tx *gorm.DB, g database.Group) error {
 	for i := 0; i < len(teams)-1; i++ {
 		for j := i + 1; j < len(teams); j++ {
 			match := database.Match{
-				GroupID: g.ID,
-				Team1ID: teams[i].ID,
-				Team2ID: teams[j].ID,
-				State:   int(core.Planned),
+				GroupID:  g.ID,
+				Team1ID:  teams[i].ID,
+				Team2ID:  teams[j].ID,
+				State:    int(core.Planned),
+				Sequence: 0,
 			}
 			if err := tx.Create(&match).Error; err != nil {
 				return err

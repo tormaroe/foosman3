@@ -1,19 +1,26 @@
 package core
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
-	"github.com/tormaroe/foosman3/server/database"
 )
 
 type FoosmanContext struct {
 	echo.Context
-	DB *gorm.DB
+	DB           *gorm.DB
+	ScheduleChan chan *ScheduleRequest
+}
+
+type ScheduleRequest struct {
+	TournamentID int
+	Count        int
+	DB           *gorm.DB
+	WG           sync.WaitGroup
 }
 
 func (ac *FoosmanContext) GetParamID() (int, error) {
@@ -24,19 +31,4 @@ func (ac *FoosmanContext) GetParamID() (int, error) {
 		return 0, ac.NoContent(http.StatusBadRequest)
 	}
 	return tID, nil
-}
-
-// AssertTournamentNotStarted will return an error if tournament has
-// started.
-func (ac *FoosmanContext) AssertTournamentNotStarted(ID int) error {
-	var tournament database.Tournament
-	if err := ac.DB.First(&tournament, ID).Error; err != nil {
-		return err
-	}
-
-	if tournament.State != int(New) {
-		return errors.New("Can't delete team from a tournament that has started")
-	}
-
-	return nil
 }

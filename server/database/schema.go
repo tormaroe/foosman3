@@ -34,9 +34,10 @@ type Match struct {
 	Team2   Team
 	Team2ID int `json:"team2_id"`
 	// ??? Add tournament ID
-	GroupID int    `json:"groupId"`
-	Table   string `json:"table"`
-	State   int    `json:"state"` // TODO: use typed constant?
+	GroupID  int    `json:"groupId"`
+	Table    string `json:"table"`
+	State    int    `json:"state"` // TODO: use typed constant?
+	Sequence int
 }
 
 type MatchResult struct {
@@ -50,23 +51,6 @@ type MatchResult struct {
 }
 
 // const schema = `
-// 	create table match (
-// 		id            integer primary key AUTOINCREMENT,
-// 		created       integer(4) not null default (strftime('%s','now')),
-// 		team_1        integer not null,
-// 		team_2        integer not null,
-// 		group_id      integer,
-// 		table_name	  text,
-// 		state         integer default 0
-// 	);
-// 	create table result (
-// 		id            integer primary key AUTOINCREMENT,
-// 		created       integer(4) not null default (strftime('%s','now')),
-// 		team_id       integer not null,
-// 		match_id      integer not null,
-// 		points        integer not null,
-// 		win           integer not null,
-// 	);
 // 	create table log (
 // 		id            integer primary key AUTOINCREMENT,
 // 		created       integer(4) not null default (strftime('%s','now')),

@@ -21,7 +21,7 @@ func DeleteTeam(c echo.Context) error {
 		return err
 	}
 
-	if err := ac.AssertTournamentNotStarted(team.TournamentID); err != nil {
+	if err := database.AssertTournamentNotStarted(ac, ID); err != nil {
 		return err
 	}
 
