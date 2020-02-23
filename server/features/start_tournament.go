@@ -93,9 +93,9 @@ func generateGroupMatches(tx *gorm.DB, g database.Group) error {
 				TeamID:  teams[i].ID,
 				MatchID: match.ID,
 				Points:  0,
-				Win:     false,
-				Loss:    false,
-				Draw:    false,
+				Win:     0,
+				Loss:    0,
+				Draw:    0,
 			}).Error; err != nil {
 				return err
 			}
@@ -104,9 +104,9 @@ func generateGroupMatches(tx *gorm.DB, g database.Group) error {
 				TeamID:  teams[j].ID,
 				MatchID: match.ID,
 				Points:  0,
-				Win:     false,
-				Loss:    false,
-				Draw:    false,
+				Win:     0,
+				Loss:    0,
+				Draw:    0,
 			}).Error; err != nil {
 				return err
 			}

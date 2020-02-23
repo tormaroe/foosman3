@@ -15,6 +15,7 @@ type FoosmanContext struct {
 	DB                 *gorm.DB
 	ScheduleChan       chan *ScheduleRequest
 	StartNextMatchChan chan *StartNextMatchRequest
+	SetResultMux       *sync.Mutex
 }
 
 type ScheduleRequest struct {

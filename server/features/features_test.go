@@ -89,7 +89,11 @@ func TestFeatures(t *testing.T) {
 	done = database.StartNextMatch(cnx, tournament.ID, "Table 2")
 	done.Wait()
 
-	// TODO: Register result. Should start a game and schedule one more
+	// Register result. Should start a game and schedule one more
+	setResult(cnx, tournament.ID, setResultRequest{
+		MatchID: 4,
+		IsDraw:  true,
+	})
 
 	// TODO: Register result for all group games.
 	// TODO: Group results.

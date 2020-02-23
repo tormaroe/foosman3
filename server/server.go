@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/golobby/config"
 	"github.com/golobby/config/feeder"
@@ -40,7 +41,7 @@ func main() {
 	startNextMatchChan := database.NewStartMatchChan()
 
 	e := echo.New()
-	api.Init(e, db, scheduleChan, startNextMatchChan)
+	api.Init(e, db, scheduleChan, startNextMatchChan, new(sync.Mutex))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf("%v", address)))
 }

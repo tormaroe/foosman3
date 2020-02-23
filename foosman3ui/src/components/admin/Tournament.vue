@@ -20,6 +20,23 @@
     <h3>Tournament: {{ tournament.name }}</h3>
     <hr>
 
+    <form class="pure-form">
+      <fieldset>
+        <label for="tName">Name:</label>
+        <input id="tName" type="text" v-model="tournament.name">
+        <label for="tTableCount">Table#:</label>
+        <input id="tTableCount" type="number" v-model="tournament.tableCount">
+        <button
+          type="button"
+          @click="updateTournament"
+          class="pure-button pure-button-primary"
+          style="margin-left:10px;">
+            Update
+        </button>
+      </fieldset>
+    </form>
+
+    <hr>
     <groups
       v-if="mode === 'groups'"
       :tournament="tournament"
@@ -133,6 +150,11 @@ export default {
       }
       this.tournament = tmp
     },
+    updateTournament: async function () {
+      this.tournament.tableCount = parseInt(this.tournament.tableCount)
+      await this.axios.patch(`http://localhost:1323/tournaments`, this.tournament)
+      await this.load()
+    },
     selectTeam: function (t) {
       this.editTeam.id = t.id
       this.editTeam.name = t.name
@@ -186,3 +208,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+label {
+  padding-left:6px;
+  padding-right: 6px;
+
+}
+</style>

@@ -45,9 +45,9 @@ type MatchResult struct {
 	TeamID  int
 	MatchID int
 	Points  int
-	Win     bool
-	Loss    bool
-	Draw    bool
+	Win     int
+	Loss    int
+	Draw    int
 }
 
 // const schema = `

@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
@@ -16,6 +17,7 @@ func Init(
 	d *gorm.DB,
 	scheduleChan chan *core.ScheduleRequest,
 	startNextMatchChan chan *core.StartNextMatchRequest,
+	setResultMux *sync.Mutex,
 ) {
 
 	// Middleware
@@ -27,6 +29,7 @@ func Init(
 				DB:                 d,
 				ScheduleChan:       scheduleChan,
 				StartNextMatchChan: startNextMatchChan,
+				SetResultMux:       setResultMux,
 			}
 			return next(cc)
 		}
@@ -56,4 +59,8 @@ func Init(
 	// e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
 
 	e.GET("/teams/:id", features.GetTeam)
+
+	e.GET("/tournaments/:id/matches/in-progress", features.GetMatchesInProgress)
+	e.GET("/tournaments/:id/matches/scheduled", features.GetMatchesScheduled)
+	e.POST("/tournaments/:id/match/set-result", features.SetResult)
 }
