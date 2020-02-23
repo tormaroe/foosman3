@@ -28,16 +28,16 @@ type Group struct {
 }
 
 type Match struct {
-	ID      int `json:"id"`
-	Team1   Team
-	Team1ID int `json:"team1_id"`
-	Team2   Team
-	Team2ID int `json:"team2_id"`
-	// ??? Add tournament ID
-	GroupID  int    `json:"groupId"`
-	Table    string `json:"table"`
-	State    int    `json:"state"` // TODO: use typed constant?
-	Sequence int
+	ID           int `json:"id"`
+	Team1        Team
+	Team1ID      int `json:"team1_id"`
+	Team2        Team
+	Team2ID      int `json:"team2_id"`
+	TournamentID int
+	GroupID      int    `json:"groupId"`
+	Table        string `json:"table"`
+	State        int    `json:"state"` // TODO: use typed constant?
+	Sequence     int
 }
 
 type MatchResult struct {

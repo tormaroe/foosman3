@@ -37,9 +37,10 @@ func main() {
 	db.LogMode(logMode.(bool))
 
 	scheduleChan := database.NewScheduleChan()
+	startNextMatchChan := database.NewStartMatchChan()
 
 	e := echo.New()
-	api.Init(e, db, scheduleChan)
+	api.Init(e, db, scheduleChan, startNextMatchChan)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf("%v", address)))
 }

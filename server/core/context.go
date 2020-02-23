@@ -12,8 +12,9 @@ import (
 
 type FoosmanContext struct {
 	echo.Context
-	DB           *gorm.DB
-	ScheduleChan chan *ScheduleRequest
+	DB                 *gorm.DB
+	ScheduleChan       chan *ScheduleRequest
+	StartNextMatchChan chan *StartNextMatchRequest
 }
 
 type ScheduleRequest struct {
@@ -21,6 +22,13 @@ type ScheduleRequest struct {
 	Count        int
 	DB           *gorm.DB
 	WG           sync.WaitGroup
+}
+
+type StartNextMatchRequest struct {
+	TournamentID   int
+	Table          string
+	FoosmanContext *FoosmanContext
+	WG             sync.WaitGroup
 }
 
 func (ac *FoosmanContext) GetParamID() (int, error) {

@@ -13,12 +13,15 @@ import (
 func TestFeatures(t *testing.T) {
 	// 0. Setup
 	db, err := database.Init(":memory:")
+	//db, err := database.Init("test.sqlite")
 	assert.NilError(t, err)
 	defer db.Close()
 	scheduleChan := database.NewScheduleChan()
+	startNextMatchChan := database.NewStartMatchChan()
 	cnx := &core.FoosmanContext{
-		DB:           db,
-		ScheduleChan: scheduleChan,
+		DB:                 db,
+		ScheduleChan:       scheduleChan,
+		StartNextMatchChan: startNextMatchChan,
 	}
 
 	// 1. Create tournament
@@ -80,7 +83,11 @@ func TestFeatures(t *testing.T) {
 	done := database.ScheduleUpcoming(cnx, tournament.ID, 3)
 	done.Wait()
 
-	// TODO: Start games, schedule new games (think about it)
+	// 6. Start first games (2 tables)
+	done = database.StartNextMatch(cnx, tournament.ID, "Table 1")
+	done.Wait()
+	done = database.StartNextMatch(cnx, tournament.ID, "Table 2")
+	done.Wait()
 
 	// TODO: Register result. Should start a game and schedule one more
 

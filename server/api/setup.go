@@ -11,16 +11,22 @@ import (
 )
 
 // Init adds middlewares and all API routes to Echo
-func Init(e *echo.Echo, d *gorm.DB, scheduleChan chan *core.ScheduleRequest) {
+func Init(
+	e *echo.Echo,
+	d *gorm.DB,
+	scheduleChan chan *core.ScheduleRequest,
+	startNextMatchChan chan *core.StartNextMatchRequest,
+) {
 
 	// Middleware
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cc := &core.FoosmanContext{
-				Context:      c,
-				DB:           d,
-				ScheduleChan: scheduleChan,
+				Context:            c,
+				DB:                 d,
+				ScheduleChan:       scheduleChan,
+				StartNextMatchChan: startNextMatchChan,
 			}
 			return next(cc)
 		}

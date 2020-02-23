@@ -1,6 +1,7 @@
 package features
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -41,6 +42,13 @@ func StartTournament(c echo.Context) error {
 	done := database.ScheduleUpcoming(ac, t.ID, t.TableCount+t.TableCount/2) // TODO: Configurable??
 	done.Wait()                                                              // Block until initial scheduling done
 
+	// TODO: Start group play (Starts TableCount matches, which again schedules new matches)
+	for i := 0; i < t.TableCount; i++ {
+		table := fmt.Sprintf("Table %d", i+1)
+		done = database.StartNextMatch(ac, tournamentID, table)
+		done.Wait()
+	}
+
 	return c.NoContent(http.StatusOK)
 }
 
@@ -70,11 +78,12 @@ func generateGroupMatches(tx *gorm.DB, g database.Group) error {
 	for i := 0; i < len(teams)-1; i++ {
 		for j := i + 1; j < len(teams); j++ {
 			match := database.Match{
-				GroupID:  g.ID,
-				Team1ID:  teams[i].ID,
-				Team2ID:  teams[j].ID,
-				State:    int(core.Planned),
-				Sequence: 0,
+				GroupID:      g.ID,
+				Team1ID:      teams[i].ID,
+				Team2ID:      teams[j].ID,
+				TournamentID: g.TournamentID,
+				State:        int(core.Planned),
+				Sequence:     0,
 			}
 			if err := tx.Create(&match).Error; err != nil {
 				return err
