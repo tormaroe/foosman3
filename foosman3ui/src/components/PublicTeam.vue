@@ -41,7 +41,10 @@
       <tbody>
         <tr v-for="m in team.matches" :key="m.id">
           <td>
-            ...
+            {{ m.opponentName }}
+          </td>
+          <td>
+            {{ m.points }}
           </td>
         </tr>
       </tbody>
