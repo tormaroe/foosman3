@@ -35,7 +35,9 @@ func Init(
 		}
 	})
 
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "${time_rfc3339_nano} ${method} ${uri} status: ${status} ${latency_human} ${error}\n",
+	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
