@@ -8,6 +8,7 @@ import PublicGroup from '../components/PublicGroup.vue'
 import PublicTeam from '../components/PublicTeam.vue'
 
 import Dashboard from '../views/Dashboard.vue'
+import RegisterResult from '../views/RegisterResult.vue'
 
 import Admin from '../views/Admin.vue'
 import TournamentList from '../components/admin/TournamentList.vue'
@@ -44,6 +45,11 @@ const routes = [
   {
     path: '/dashboard/:id',
     component: Dashboard,
+    props: true
+  },
+  {
+    path: '/register-results/:id',
+    component: RegisterResult,
     props: true
   },
   {

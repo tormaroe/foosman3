@@ -60,6 +60,9 @@
     <p>
       <router-link :to="'/dashboard/' + tournament.id">Open dashboard</router-link>
     </p>
+    <p>
+      <router-link :to="'/register-results/' + tournament.id">Register results</router-link>
+    </p>
   </div>
 </template>
 
