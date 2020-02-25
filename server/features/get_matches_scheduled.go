@@ -40,6 +40,8 @@ func GetMatchesScheduled(c echo.Context) error {
 		"matches.tournament_id = ? and matches.state = ?",
 		tournamentID,
 		int(core.Scheduled),
+	).Order(
+		"matches.[sequence]",
 	).Scan(&result).Error; err != nil {
 		log.Print(err)
 	}

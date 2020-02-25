@@ -57,6 +57,9 @@
         </tbody>
       </table>
     </template>
+    <p>
+      <router-link :to="'/dashboard/' + tournament.id">Open dashboard</router-link>
+    </p>
   </div>
 </template>
 

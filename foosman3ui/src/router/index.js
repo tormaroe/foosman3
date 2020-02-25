@@ -7,6 +7,8 @@ import PublicTournament from '../components/PublicTournament.vue'
 import PublicGroup from '../components/PublicGroup.vue'
 import PublicTeam from '../components/PublicTeam.vue'
 
+import Dashboard from '../views/Dashboard.vue'
+
 import Admin from '../views/Admin.vue'
 import TournamentList from '../components/admin/TournamentList.vue'
 import TournamentAdmin from '../components/admin/Tournament.vue'
@@ -38,6 +40,11 @@ const routes = [
         props: true
       }
     ]
+  },
+  {
+    path: '/dashboard/:id',
+    component: Dashboard,
+    props: true
   },
   {
     path: '/admin',
