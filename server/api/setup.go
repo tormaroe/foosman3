@@ -52,13 +52,14 @@ func Init(
 	e.PATCH("/tournaments", features.UpdateTournament)
 
 	e.GET("/tournaments/:id", features.GetTournamentByID)
+	e.DELETE("/tournaments/:id", features.DeleteTournament)
 	e.POST("/tournaments/:id/teams", features.AddTeam)
 	e.PATCH("/tournaments/teams", features.UpdateTeam)
 	e.DELETE("/tournaments/teams/:id", features.DeleteTeam)
 	e.POST("/tournaments/:id/groups", features.SetGroups)
 
 	e.POST("/tournaments/:id/start", features.StartTournament)
-	// e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
+	e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
 
 	e.GET("/teams/:id", features.GetTeam)
 

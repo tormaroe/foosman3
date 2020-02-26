@@ -34,10 +34,12 @@ type Match struct {
 	Team2        Team
 	Team2ID      int `json:"team2_id"`
 	TournamentID int
-	GroupID      int    `json:"groupId"`
+	GroupID      int `json:"groupId"`
+	Group        Group
 	Table        string `json:"table"`
 	State        int    `json:"state"` // TODO: use typed constant?
 	Sequence     int
+	MatchResults []MatchResult
 }
 
 type MatchResult struct {

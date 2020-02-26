@@ -1,6 +1,11 @@
 <template>
   <div v-if="tournament">
     <button
+      type="button"
+      @click="deleteTournament"
+      class="pure-button pure-button-danger"
+      style="float: right;margin-left:5px;">DELETE</button>
+    <button
       v-show="mode !== 'default'"
       type="button"
       @click="mode = 'default'"
@@ -11,6 +16,12 @@
       @click="startTournament"
       class="pure-button pure-button-primary"
       style="float: right;margin-left:5px;">START TOURNAMENT</button>
+    <button
+      v-show="mode !== 'matches'"
+      type="button"
+      @click="mode = 'matches'"
+      class="pure-button pure-button-primary"
+      style="float: right;margin-left:5px;">Matches</button>
     <button
       v-show="mode !== 'groups'"
       type="button"
@@ -37,6 +48,10 @@
     </form>
 
     <hr>
+    <matches
+      v-if="mode === 'matches'"
+      :tournament-id="tournament.id"
+      />
     <groups
       v-if="mode === 'groups'"
       :tournament="tournament"
@@ -105,10 +120,12 @@
 
 <script>
 import Groups from './Groups.vue'
+import Matches from './Matches.vue'
 
 export default {
   components: {
-    Groups
+    Groups,
+    Matches
   },
   props: {
     id: {
@@ -149,6 +166,12 @@ export default {
         tmp.teams = []
       }
       this.tournament = tmp
+    },
+    deleteTournament: async function () {
+      if (window.confirm('ARE YOU SURE?')) {
+        await this.axios.delete(`http://localhost:1323/tournaments/${this.id}`)
+        this.$router.push({ path: '/admin' })
+      }
     },
     updateTournament: async function () {
       this.tournament.tableCount = parseInt(this.tournament.tableCount)
@@ -214,5 +237,9 @@ label {
   padding-left:6px;
   padding-right: 6px;
 
+}
+.pure-button-danger {
+  background-color: red;
+  color: white;
 }
 </style>
