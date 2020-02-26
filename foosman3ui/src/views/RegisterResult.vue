@@ -7,10 +7,10 @@
       <p>
         {{ selectedResult.description }}
       </p>
-      <div class="result">
+      <div class="result" @click="confirmResult">
         <b>YES</b>
       </div>
-      <div class="result">
+      <div class="result" @click="cancel">
         <b>Cancel</b>
       </div>
     </template>
@@ -18,13 +18,13 @@
       <p>
         <b>Choose result..</b>
       </p>
-      <div class="result">
+      <div class="result" @click="setWinner(selectedMatch.team1Id, selectedMatch.team1Name)">
         {{ selectedMatch.team1Name }} won!
       </div>
-      <div class="result">
+      <div class="result" @click="setWinner(selectedMatch.team2Id, selectedMatch.team2Name)">
         {{ selectedMatch.team2Name }} won!
       </div>
-      <div class="result">
+      <div class="result" @click="setDraw()">
         Draw!
       </div>
     </template>
@@ -66,6 +66,31 @@ export default {
     },
     selectMatch: function (m) {
       this.selectedMatch = m
+    },
+    cancel: function () {
+      this.selectedResult = null
+      this.selectedMatch = null
+    },
+    setWinner: function (id, name) {
+      this.selectedResult = {
+        description: 'WINNER: ' + name,
+        matchId: this.selectedMatch.id,
+        isDraw: false,
+        winnerId: id
+      }
+    },
+    setDraw: function () {
+      this.selectedResult = {
+        description: 'DRAW',
+        matchId: this.selectedMatch.id,
+        isDraw: true,
+        winnerId: -1
+      }
+    },
+    confirmResult: async function () {
+      await this.axios.post(`http://localhost:1323/tournaments/${this.id}/match/set-result`, this.selectedResult)
+      this.cancel()
+      await this.load()
     }
   }
 }
