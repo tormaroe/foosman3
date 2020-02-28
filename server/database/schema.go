@@ -60,3 +60,12 @@ type MatchResult struct {
 // 		message       text not null
 // 	);
 // `
+
+// User is the persistance model of an authenticated Foosman3 user
+type User struct {
+	ID            int
+	Name          string
+	PasswordHash  string
+	IsAdmin       bool
+	IsScorekeeper bool
+}

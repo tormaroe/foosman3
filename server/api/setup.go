@@ -66,4 +66,20 @@ func Init(
 	e.GET("/tournaments/:id/matches/in-progress", features.GetMatchesInProgress)
 	e.GET("/tournaments/:id/matches/scheduled", features.GetMatchesScheduled)
 	e.POST("/tournaments/:id/match/set-result", features.SetResult)
+
+	e.GET("/user-count", userCount)
+	e.POST("/login", login)
+	e.POST("/create-first-admin", createFirstAdmin)
+
+	// -- ROUTES BELOW THIS LINE REQUIRES JWT TOKEN --
+
+	r := e.Group("/restricted")
+	r.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey:  []byte("secret"), // TODO
+		TokenLookup: "cookie:jwt",
+	}))
+	r.GET("/me", me)
+	r.GET("/users", getUsers)
+	r.POST("/create-user", createUser)
+	r.PATCH("/update-user", updateUser)
 }

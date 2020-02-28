@@ -17,7 +17,7 @@ func Init(path string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&Tournament{}, &Team{}, &Group{}, &Match{}, &MatchResult{})
+	db.AutoMigrate(&Tournament{}, &Team{}, &Group{}, &Match{}, &MatchResult{}, &User{})
 	log.Println("Database initialized")
 	return db, err
 }
