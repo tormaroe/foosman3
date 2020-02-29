@@ -39,8 +39,8 @@ func StartTournament(c echo.Context) error {
 		return err
 	}
 
-	done := database.ScheduleUpcoming(ac, t.ID, t.TableCount+t.TableCount/2) // TODO: Configurable??
-	done.Wait()                                                              // Block until initial scheduling done
+	done := database.ScheduleUpcoming(ac, t.ID, t.TableCount)
+	done.Wait() // Block until initial scheduling done
 
 	// TODO: Start group play (Starts TableCount matches, which again schedules new matches)
 	for i := 0; i < t.TableCount; i++ {
