@@ -10,8 +10,9 @@ type Tournament struct {
 }
 
 type Team struct {
-	ID           int        `json:"id"`
-	GroupID      int        `json:"groupId"`
+	ID           int `json:"id"`
+	GroupID      int `json:"groupId"`
+	Group        Group
 	Tournament   Tournament `json:"-"`
 	TournamentID int        `json:"tournamentId"`
 	Name         string     `json:"name"`

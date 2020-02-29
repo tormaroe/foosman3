@@ -5,6 +5,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueDraggable from 'vue-draggable'
 import VueLodash from 'vue-lodash'
+import 'vue-material-design-icons/styles.css'
 import './lib/filters'
 
 Vue.config.productionTip = false

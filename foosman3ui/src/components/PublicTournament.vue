@@ -1,22 +1,25 @@
 <template>
   <div v-if="tournament">
-    <div><h1>{{tournament.name}}</h1></div>
+    <div><h1><soccer-icon /> {{tournament.name}}</h1></div>
 
     <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
       <thead>
         <tr>
-          <th colspan="2" style="text-align:center">
-            Matches in progress
+          <th colspan="3" style="text-align:center">
+            <play-icon /> Matches in progress
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="m in inProgress" :key="m.id">
           <td>
-            {{ m.team1Name }} vs {{ m.team2Name }}
+            {{ m.table }}
           </td>
           <td>
-            {{ m.table }}
+            <a :href="'#/team/' + m.team1Id">{{ m.team1Name }}</a>
+          </td>
+          <td>
+            <a :href="'#/team/' + m.team2Id">{{ m.team2Name }}</a>
           </td>
         </tr>
       </tbody>
@@ -25,15 +28,19 @@
     <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
       <thead>
         <tr>
-          <th style="text-align:center">
-            Upcoming matches
+          <th colspan=3 style="text-align:center">
+            <alarm-icon /> Upcoming matches
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="m in scheduled" :key="m.id">
           <td>
-            {{ m.team1Name }} vs {{ m.team2Name }}
+            <a :href="'#/team/' + m.team1Id">{{ m.team1Name }}</a>
+          </td>
+          <td style="text-align:center">vs.</td>
+          <td style="text-align:right">
+            <a :href="'#/team/' + m.team2Id">{{ m.team2Name }}</a>
           </td>
         </tr>
       </tbody>
@@ -44,7 +51,7 @@
         <thead>
           <tr>
             <th>
-              <a :href="'#/group/' + g.id">{{g.name}}</a>
+              {{g.name}}
             </th>
             <th style="text-align:right">Ma</th>
             <th style="text-align:right">Wi</th>
@@ -68,16 +75,29 @@
       </table>
     </template>
     <p>
-      <router-link :to="'/dashboard/' + tournament.id">Open dashboard</router-link>
+      <router-link :to="'/dashboard/' + tournament.id"><view-dashboard-icon /> Open dashboard</router-link>
     </p>
     <p>
-      <router-link :to="'/register-results/' + tournament.id">Register results</router-link>
+      <router-link :to="'/register-results/' + tournament.id"><counter-icon /> Register results</router-link>
     </p>
   </div>
 </template>
 
 <script>
+import PlayIcon from 'vue-material-design-icons/Play.vue'
+import AlarmIcon from 'vue-material-design-icons/Alarm.vue'
+import SoccerIcon from 'vue-material-design-icons/Soccer.vue'
+import ViewDashboardIcon from 'vue-material-design-icons/ViewDashboard.vue'
+import CounterIcon from 'vue-material-design-icons/Counter.vue'
+
 export default {
+  components: {
+    PlayIcon,
+    AlarmIcon,
+    SoccerIcon,
+    ViewDashboardIcon,
+    CounterIcon
+  },
   props: {
     id: {
       type: [Number, String],
@@ -124,13 +144,20 @@ export default {
     },
     groupTeams: function (gID) {
       // TODO: Order teams by Points and then Wins
-      return this.tournament.teams.filter(t => t.groupId === gID)
+      return this._.orderBy(
+        this.tournament.teams.filter(t => t.groupId === gID),
+        ['stats.Points', 'stats.Wins'],
+        ['desc', 'desc']
+      )
     }
   }
 }
 </script>
 
 <style scoped>
+h1 {
+  font-size:18px;
+}
 th {
   font-size:12px;
 }

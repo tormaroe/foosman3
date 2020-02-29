@@ -4,7 +4,6 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import PublicTournamentList from '../components/PublicTournamentList.vue'
 import PublicTournament from '../components/PublicTournament.vue'
-import PublicGroup from '../components/PublicGroup.vue'
 import PublicTeam from '../components/PublicTeam.vue'
 
 import Dashboard from '../views/Dashboard.vue'
@@ -28,11 +27,6 @@ const routes = [
       {
         path: 'tournament/:id',
         component: PublicTournament,
-        props: true
-      },
-      {
-        path: 'group/:id',
-        component: PublicGroup,
         props: true
       },
       {
