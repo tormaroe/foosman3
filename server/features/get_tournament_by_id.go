@@ -28,21 +28,9 @@ func GetTournamentByID(c echo.Context) error {
 
 func getTournament(db *gorm.DB, ID int) (database.Tournament, error) {
 	var t database.Tournament
-	if err := db.First(&t, ID).Error; err != nil {
+	if err := db.Preload("Teams").Preload("Groups").First(&t, ID).Error; err != nil {
 		return t, err
 	}
-
-	var teams []database.Team
-	if err := db.Model(&t).Related(&teams).Error; err != nil {
-		return t, err
-	}
-	t.Teams = teams
-
-	var groups []database.Group
-	if err := db.Model(&t).Related(&groups).Error; err != nil {
-		return t, err
-	}
-	t.Groups = groups
 
 	return t, nil
 }

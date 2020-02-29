@@ -43,9 +43,14 @@
       <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;" :key="g.id">
         <thead>
           <tr>
-            <th style="text-align:center">
+            <th>
               <a :href="'#/group/' + g.id">{{g.name}}</a>
             </th>
+            <th style="text-align:right">Ma</th>
+            <th style="text-align:right">Wi</th>
+            <th style="text-align:right">Dr</th>
+            <th style="text-align:right">Lo</th>
+            <th style="text-align:right">Pt</th>
           </tr>
         </thead>
         <tbody>
@@ -53,6 +58,11 @@
             <td>
               <a :href="'#/team/' + t.id">{{t.name}}</a>
             </td>
+            <td style="text-align:right">{{t.stats.PlayedCount}}</td>
+            <td style="text-align:right">{{t.stats.Wins}}</td>
+            <td style="text-align:right">{{t.stats.Draws}}</td>
+            <td style="text-align:right">{{t.stats.Losses}}</td>
+            <td style="text-align:right">{{t.stats.Points}}</td>
           </tr>
         </tbody>
       </table>
@@ -92,18 +102,39 @@ export default {
   methods: {
     load: function () {
       let self = this
+      const _ = this._
       const tournamentRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}`)
+      const scoresRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/scores`)
       const inProgressRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/in-progress`)
       const scheduledRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/scheduled`)
-      this.axios.all([tournamentRequest, inProgressRequest, scheduledRequest]).then(this.axios.spread(function (tournamentRes, inProgressRes, scheduledRes) {
-        self.tournament = tournamentRes.data
-        self.inProgress = inProgressRes.data
-        self.scheduled = scheduledRes.data
-      }))
+      this.axios
+        .all([tournamentRequest, scoresRequest, inProgressRequest, scheduledRequest])
+        .then(this.axios.spread(function (tournamentRes, scoresRes, inProgressRes, scheduledRes) {
+          self.tournament = tournamentRes.data
+          self.inProgress = inProgressRes.data
+          self.scheduled = scheduledRes.data
+
+          const scores = scoresRes.data
+          self.tournament.teams.forEach(t => {
+            _.assignIn(t, {
+              stats: _.find(scores, ['TeamID', t.id])
+            })
+          })
+        }))
     },
     groupTeams: function (gID) {
+      // TODO: Order teams by Points and then Wins
       return this.tournament.teams.filter(t => t.groupId === gID)
     }
   }
 }
 </script>
+
+<style scoped>
+th {
+  font-size:12px;
+}
+td {
+  font-size:12px;
+}
+</style>

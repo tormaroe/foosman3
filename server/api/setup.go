@@ -60,6 +60,7 @@ func Init(
 
 	e.POST("/tournaments/:id/start", features.StartTournament)
 	e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
+	e.GET("/tournaments/:id/scores", features.GetTournamentScores)
 
 	e.GET("/teams/:id", features.GetTeam)
 

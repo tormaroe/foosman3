@@ -10,21 +10,21 @@ type Tournament struct {
 }
 
 type Team struct {
-	ID           int `json:"id"`
-	GroupID      int `json:"groupId"`
-	Tournament   Tournament
-	TournamentID int    `json:"tournamentId"`
-	Name         string `json:"name"`
-	Player1      string `json:"player1"`
-	Player2      string `json:"player2"`
-	Player3      string `json:"player3"`
+	ID           int        `json:"id"`
+	GroupID      int        `json:"groupId"`
+	Tournament   Tournament `json:"-"`
+	TournamentID int        `json:"tournamentId"`
+	Name         string     `json:"name"`
+	Player1      string     `json:"player1"`
+	Player2      string     `json:"player2"`
+	Player3      string     `json:"player3"`
 }
 
 type Group struct {
-	ID           int    `json:"id"`
-	Name         string `json:"name"`
-	Tournament   Tournament
-	TournamentID int `json:"tournamentId"`
+	ID           int        `json:"id"`
+	Name         string     `json:"name"`
+	Tournament   Tournament `json:"-"`
+	TournamentID int        `json:"tournamentId"`
 }
 
 type Match struct {
