@@ -6,9 +6,47 @@
         {{ editMatch.Team1.name }} vs. {{ editMatch.Team2.name }}
       </p>
       <div>
-        <button @click="cancelEdit" class="pure-button" title="Cancel">Cancel</button>
+        <button
+          @click="cancelEdit"
+          class="pure-button"
+          title="Cancel">
+            Cancel
+        </button>
         &nbsp;
-        <button @click="unplayMatch" class="pure-button" style="background-color:red;color:white" title="Unplay">Unplay match</button>
+        <button
+          @click="unplayMatch"
+          class="pure-button"
+          style="background-color:red;color:white"
+          title="Unplay">
+            Unplay match
+        </button>
+        &nbsp;
+        <button
+          v-if="winnerId(editMatch) !== editMatch.Team1.ID"
+          @click="setWinner(editMatch.team1_id)"
+          class="pure-button"
+          style="background-color:red;color:white"
+          title="Change winner">
+            Change Winner: {{ editMatch.Team1.name }}
+        </button>
+        &nbsp;
+        <button
+          v-if="winnerId(editMatch) !== editMatch.team2_id"
+          @click="setWinner(editMatch.team2_id)"
+          class="pure-button"
+          style="background-color:red;color:white"
+          title="Change winner">
+            Change Winner: {{ editMatch.Team2.name }}
+        </button>
+        &nbsp;
+        <button
+          v-if="winnerId(editMatch) !== undefined"
+          @click="setDraw"
+          class="pure-button"
+          style="background-color:red;color:white"
+          title="Change winner">
+            Make match a draw
+        </button>
       </div>
     </div>
     <table class="pure-table pure-table-horizontal" style="width:99%">
@@ -78,6 +116,44 @@ export default {
     unplayMatch: async function () {
       if (window.confirm('Are you sure?')) {
         await this.axios.post(`http://localhost:1323/matches/${this.editMatch.id}/reset`)
+        this.cancelEdit()
+        await this.loadMatches(this.tournamentId)
+      }
+    },
+    winnerId: async function (m) {
+      // TODO: SOme bug here makes all buttons visible.. :/
+      if (m.MatchResults[0].Win === 1) {
+        console.log('winner', m.MatchResults[0].Win)
+        return m.MatchResults[0].TeamID
+      }
+      if (m.MatchResults[1].Win === 1) {
+        console.log('winner', m.MatchResults[1].Win)
+        return m.MatchResults[1].TeamID
+      }
+      console.log('draw')
+      return undefined
+    },
+    setWinner: async function (teamId) {
+      if (window.confirm('Are you sure?')) {
+        await this.axios.post(
+          `http://localhost:1323/tournaments/${this.tournamentId}/match/set-result`,
+          {
+            matchId: this.editMatch.id,
+            isDraw: false,
+            winnerId: teamId
+          })
+        this.cancelEdit()
+        await this.loadMatches(this.tournamentId)
+      }
+    },
+    setDraw: async function () {
+      if (window.confirm('Are you sure?')) {
+        await this.axios.post(
+          `http://localhost:1323/tournaments/${this.tournamentId}/match/set-result`,
+          {
+            matchId: this.editMatch.id,
+            isDraw: true
+          })
         this.cancelEdit()
         await this.loadMatches(this.tournamentId)
       }

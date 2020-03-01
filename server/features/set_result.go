@@ -31,7 +31,7 @@ func SetResult(c echo.Context) error {
 		return err
 	}
 
-	ac.SetResultMux.Lock()
+	ac.SetResultMux.Lock() // TODO: Am I using this everywhere it's needed?
 	defer ac.SetResultMux.Unlock()
 
 	setResult(ac, tournamentID, *req)
@@ -63,23 +63,34 @@ func setResult(c *core.FoosmanContext, tournamentID int, req setResultRequest) e
 		results[1].Points = 1
 		results[0].Draw = 1
 		results[1].Draw = 1
+		results[0].Win = 0
+		results[1].Win = 0
+		results[0].Loss = 0
+		results[1].Loss = 0
 	} else {
 		for i := 0; i < 2; i++ {
 			if results[i].TeamID == req.WinnerID {
 				results[i].Points = 2
+				results[i].Draw = 0
 				results[i].Win = 1
+				results[i].Loss = 0
 			} else {
 				results[i].Points = 0
+				results[i].Draw = 0
+				results[i].Win = 0
 				results[i].Loss = 1
 			}
 		}
 	}
 
-	match.State = int(core.Played)
+	matchWasAlreadyPlayed := match.State == int(core.Played)
 
 	if err := c.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Save(match).Error; err != nil {
-			return err
+		if !matchWasAlreadyPlayed {
+			match.State = int(core.Played)
+			if err := tx.Save(match).Error; err != nil {
+				return err
+			}
 		}
 		for i := 0; i < len(results); i++ {
 			if err := tx.Save(results[i]).Error; err != nil {
@@ -91,9 +102,11 @@ func setResult(c *core.FoosmanContext, tournamentID int, req setResultRequest) e
 		return err
 	}
 
-	// Trigger next match on same table
-	done := database.StartNextMatch(c, tournamentID, match.Table)
-	done.Wait()
+	if !matchWasAlreadyPlayed {
+		// Trigger next match on same table
+		done := database.StartNextMatch(c, tournamentID, match.Table)
+		done.Wait()
+	}
 
 	return nil
 }
