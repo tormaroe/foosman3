@@ -53,6 +53,7 @@ func Init(
 
 	e.GET("/tournaments/:id", features.GetTournamentByID)
 	e.DELETE("/tournaments/:id", features.DeleteTournament)
+	e.POST("/tournaments/:id/reset", features.ResetTournament)
 	e.POST("/tournaments/:id/teams", features.AddTeam)
 	e.PATCH("/tournaments/teams", features.UpdateTeam)
 	e.DELETE("/tournaments/teams/:id", features.DeleteTeam)

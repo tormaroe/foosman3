@@ -6,6 +6,11 @@
       class="pure-button pure-button-danger"
       style="float: right;margin-left:5px;">DELETE</button>
     <button
+      type="button"
+      @click="resetTournament"
+      class="pure-button pure-button-danger"
+      style="float: right;margin-left:5px;">Reset</button>
+    <button
       v-show="mode !== 'default'"
       type="button"
       @click="mode = 'default'"
@@ -166,6 +171,12 @@ export default {
         tmp.teams = []
       }
       this.tournament = tmp
+    },
+    resetTournament: async function () {
+      if (window.confirm('This will only work if there are no match results yet. Continue?')) {
+        await this.axios.post(`http://localhost:1323/tournaments/${this.id}/reset`)
+        await this.load()
+      }
     },
     deleteTournament: async function () {
       if (window.confirm('ARE YOU SURE?')) {
