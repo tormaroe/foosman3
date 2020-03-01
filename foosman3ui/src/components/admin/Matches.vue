@@ -1,5 +1,16 @@
 <template>
   <div>
+    <div v-if="editMatch" class="edit-container">
+      <p><b>EDIT MATCH</b></p>
+      <p>
+        {{ editMatch.Team1.name }} vs. {{ editMatch.Team2.name }}
+      </p>
+      <div>
+        <button @click="cancelEdit" class="pure-button" title="Cancel">Cancel</button>
+        &nbsp;
+        <button @click="unplayMatch" class="pure-button" style="background-color:red;color:white" title="Unplay">Unplay match</button>
+      </div>
+    </div>
     <table class="pure-table pure-table-horizontal" style="width:99%">
       <thead>
         <tr>
@@ -10,6 +21,7 @@
           <th>Group</th>
           <th>Table</th>
           <th>State</th>
+          <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -21,6 +33,9 @@
           <td>{{ m.Group.name }}</td>
           <td>{{ m.table }}</td>
           <td>{{ m.state }}</td>
+          <td>
+            <button v-if="m.state === 3" @click="edit(m)" class="pure-button" style="background-color:orange" title="Fix match">Fix</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -37,15 +52,34 @@ export default {
   },
   data: function () {
     return {
-      matches: []
+      matches: [],
+      editMatch: null
     }
   },
   watch: {
     tournamentId: {
       immediate: true,
       async handler (value) {
-        const res = await this.axios.get(`http://localhost:1323/tournaments/${value}/matches`)
-        this.matches = res.data
+        await this.loadMatches(value)
+      }
+    }
+  },
+  methods: {
+    loadMatches: async function (id) {
+      const res = await this.axios.get(`http://localhost:1323/tournaments/${id}/matches`)
+      this.matches = res.data
+    },
+    edit: function (m) {
+      this.editMatch = m
+    },
+    cancelEdit: function () {
+      this.editMatch = null
+    },
+    unplayMatch: async function () {
+      if (window.confirm('Are you sure?')) {
+        await this.axios.post(`http://localhost:1323/matches/${this.editMatch.id}/reset`)
+        this.cancelEdit()
+        await this.loadMatches(this.tournamentId)
       }
     }
   },
@@ -71,3 +105,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.edit-container {
+  border: solid 1px silver;
+  margin-bottom: 10px;
+  padding:12px;
+}
+</style>

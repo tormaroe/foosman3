@@ -38,7 +38,7 @@ func Init(
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${time_rfc3339_nano} ${method} ${uri} status: ${status} ${latency_human} ${error}\n",
 	}))
-	e.Use(middleware.Recover())
+	//e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
 	// Routes
@@ -61,6 +61,7 @@ func Init(
 	e.POST("/tournaments/:id/start", features.StartTournament)
 	e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
 	e.GET("/tournaments/:id/scores", features.GetTournamentScores)
+	e.POST("/matches/:id/reset", features.ResetMatch)
 
 	e.GET("/teams/:id", features.GetTeam)
 
