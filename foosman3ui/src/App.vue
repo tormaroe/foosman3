@@ -29,7 +29,7 @@ body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #243325;
 }
 
 th {
@@ -47,5 +47,26 @@ th {
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+/* unvisited link */
+a:link {
+  color: #3f9148;
+  text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+  color: #3f9148;
+}
+
+/* mouse over link */
+a:hover {
+  color: hotpink;
+}
+
+/* selected link */
+a:active {
+  color: #3f9148;
 }
 </style>

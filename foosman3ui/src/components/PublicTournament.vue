@@ -2,7 +2,7 @@
   <div v-if="tournament">
     <div><h1><soccer-icon /> {{tournament.name}}</h1></div>
 
-    <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
+    <table v-show="inProgress.length > 0" class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
       <thead>
         <tr>
           <th colspan="3" style="text-align:center">
@@ -25,7 +25,7 @@
       </tbody>
     </table>
 
-    <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
+    <table v-show="scheduled.length > 0" class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
       <thead>
         <tr>
           <th colspan=3 style="text-align:center">
