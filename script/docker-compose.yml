@@ -4,7 +4,14 @@ services:
         image: "tormaroe/foosman3-server:latest"
         ports: 
             - "1323:1323"
+        volumes:
+            - data-volume:/var/lib/db
+        environment: 
+            - FOOSMAN3_CONFIG=config-prod.json
     frontend:
         image: "tormaroe/foosman3-ui:latest"
         ports: 
             - "8080:80"
+
+volumes:
+    data-volume:

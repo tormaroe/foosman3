@@ -1,0 +1,11 @@
+{
+    "database": {
+        "path": "/var/lib/db/foosman3.sqlite"
+    },
+    "api": {
+        "address": ":1323"
+    },
+    "instrumentation": {
+        "dbLogMode": false
+    }
+}

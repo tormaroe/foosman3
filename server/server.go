@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"sync"
 
 	"github.com/golobby/config"
@@ -15,8 +16,14 @@ import (
 )
 
 func main() {
+	configFile := os.Getenv("FOOSMAN3_CONFIG")
+	if len(configFile) == 0 {
+		configFile = "config.json"
+	}
+	log.Printf("Reading configuration from: %s", configFile)
+
 	c, err := config.New(config.Options{
-		Feeder: feeder.Json{Path: "config.json"},
+		Feeder: feeder.Json{Path: configFile},
 	})
 	if err != nil {
 		log.Fatal("Unable to read config:", err)
