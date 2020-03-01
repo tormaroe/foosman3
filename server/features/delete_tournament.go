@@ -18,20 +18,10 @@ func DeleteTournament(c echo.Context) error {
 
 	ac.DB.Transaction(func(tx *gorm.DB) error {
 
-		var matches []database.Match
-		if err := tx.Where("tournament_id = ?", ID).Find(&matches).Error; err != nil {
+		if err := deleteTournamentMatches(tx, ID); err != nil {
 			return err
 		}
 
-		for _, m := range matches {
-			if err := tx.Delete(database.MatchResult{}, "match_id = ?", m.ID).Error; err != nil {
-				return err
-			}
-		}
-
-		if err := tx.Delete(database.Match{}, "tournament_id = ?", ID).Error; err != nil {
-			return err
-		}
 		if err := tx.Delete(database.Team{}, "tournament_id = ?", ID).Error; err != nil {
 			return err
 		}
@@ -46,4 +36,23 @@ func DeleteTournament(c echo.Context) error {
 	})
 
 	return c.NoContent(http.StatusOK)
+}
+
+// Remarks: Should be called in a database transaction
+func deleteTournamentMatches(tx *gorm.DB, ID int) error {
+	var matches []database.Match
+	if err := tx.Where("tournament_id = ?", ID).Find(&matches).Error; err != nil {
+		return err
+	}
+
+	for _, m := range matches {
+		if err := tx.Delete(database.MatchResult{}, "match_id = ?", m.ID).Error; err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Delete(database.Match{}, "tournament_id = ?", ID).Error; err != nil {
+		return err
+	}
+	return nil
 }
