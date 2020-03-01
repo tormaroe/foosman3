@@ -123,14 +123,11 @@ export default {
     winnerId: async function (m) {
       // TODO: SOme bug here makes all buttons visible.. :/
       if (m.MatchResults[0].Win === 1) {
-        console.log('winner', m.MatchResults[0].Win)
         return m.MatchResults[0].TeamID
       }
       if (m.MatchResults[1].Win === 1) {
-        console.log('winner', m.MatchResults[1].Win)
         return m.MatchResults[1].TeamID
       }
-      console.log('draw')
       return undefined
     },
     setWinner: async function (teamId) {
