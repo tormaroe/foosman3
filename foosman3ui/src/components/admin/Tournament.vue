@@ -165,7 +165,7 @@ export default {
   },
   methods: {
     load: async function () {
-      const res = await this.axios.get(`http://localhost:1323/tournaments/${this.id}`)
+      const res = await this.axios.get(`tournaments/${this.id}`)
       let tmp = res.data
       if (tmp.teams === null) {
         tmp.teams = []
@@ -174,19 +174,19 @@ export default {
     },
     resetTournament: async function () {
       if (window.confirm('This will only work if there are no match results yet. Continue?')) {
-        await this.axios.post(`http://localhost:1323/tournaments/${this.id}/reset`)
+        await this.axios.post(`tournaments/${this.id}/reset`)
         await this.load()
       }
     },
     deleteTournament: async function () {
       if (window.confirm('ARE YOU SURE?')) {
-        await this.axios.delete(`http://localhost:1323/tournaments/${this.id}`)
+        await this.axios.delete(`tournaments/${this.id}`)
         this.$router.push({ path: '/admin' })
       }
     },
     updateTournament: async function () {
       this.tournament.tableCount = parseInt(this.tournament.tableCount)
-      await this.axios.patch(`http://localhost:1323/tournaments`, this.tournament)
+      await this.axios.patch(`tournaments`, this.tournament)
       await this.load()
     },
     selectTeam: function (t) {
@@ -204,9 +204,9 @@ export default {
     saveTeam: async function () {
       // TODO: Validation
       if (this.editTeam.id > 0) {
-        await this.axios.patch('http://localhost:1323/tournaments/teams', this.editTeam)
+        await this.axios.patch('tournaments/teams', this.editTeam)
       } else {
-        await this.axios.post(`http://localhost:1323/tournaments/${this.id}/teams`, this.editTeam)
+        await this.axios.post(`tournaments/${this.id}/teams`, this.editTeam)
       }
       this.clearEditTeam()
       await this.load()
@@ -224,7 +224,7 @@ export default {
     },
     deleteTeam: async function (t) {
       if (confirm(`Delete ${t.name} for sure?`)) {
-        await this.axios.delete(`http://localhost:1323/tournaments/teams/${t.id}`)
+        await this.axios.delete(`tournaments/teams/${t.id}`)
         await this.load()
       }
     },
@@ -234,7 +234,7 @@ export default {
     },
     startTournament: async function () {
       if (confirm('Are all teams registered and placed in groups? Then you may start the tournament..')) {
-        await this.axios.post(`http://localhost:1323/tournaments/${this.id}/start`)
+        await this.axios.post(`tournaments/${this.id}/start`)
         alert('Tournament started')
         this.$router.push({ path: `/tournament/${this.id}` })
       }

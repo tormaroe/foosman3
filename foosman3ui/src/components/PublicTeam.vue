@@ -101,7 +101,7 @@ export default {
   methods: {
     load: async function () {
       const self = this
-      const res = await this.axios.get(`http://localhost:1323/teams/${this.id}`)
+      const res = await this.axios.get(`teams/${this.id}`)
       this.teamdata = res.data
 
       this.stats = {

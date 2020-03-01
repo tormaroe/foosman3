@@ -123,10 +123,10 @@ export default {
     load: function () {
       let self = this
       const _ = this._
-      const tournamentRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}`)
-      const scoresRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/scores`)
-      const inProgressRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/in-progress`)
-      const scheduledRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/scheduled`)
+      const tournamentRequest = this.axios.get(`tournaments/${this.id}`)
+      const scoresRequest = this.axios.get(`tournaments/${this.id}/scores`)
+      const inProgressRequest = this.axios.get(`tournaments/${this.id}/matches/in-progress`)
+      const scheduledRequest = this.axios.get(`tournaments/${this.id}/matches/scheduled`)
       this.axios
         .all([tournamentRequest, scoresRequest, inProgressRequest, scheduledRequest])
         .then(this.axios.spread(function (tournamentRes, scoresRes, inProgressRes, scheduledRes) {

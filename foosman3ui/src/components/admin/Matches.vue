@@ -104,7 +104,7 @@ export default {
   },
   methods: {
     loadMatches: async function (id) {
-      const res = await this.axios.get(`http://localhost:1323/tournaments/${id}/matches`)
+      const res = await this.axios.get(`tournaments/${id}/matches`)
       this.matches = res.data
     },
     edit: function (m) {
@@ -115,7 +115,7 @@ export default {
     },
     unplayMatch: async function () {
       if (window.confirm('Are you sure?')) {
-        await this.axios.post(`http://localhost:1323/matches/${this.editMatch.id}/reset`)
+        await this.axios.post(`matches/${this.editMatch.id}/reset`)
         this.cancelEdit()
         await this.loadMatches(this.tournamentId)
       }
@@ -133,7 +133,7 @@ export default {
     setWinner: async function (teamId) {
       if (window.confirm('Are you sure?')) {
         await this.axios.post(
-          `http://localhost:1323/tournaments/${this.tournamentId}/match/set-result`,
+          `tournaments/${this.tournamentId}/match/set-result`,
           {
             matchId: this.editMatch.id,
             isDraw: false,
@@ -146,7 +146,7 @@ export default {
     setDraw: async function () {
       if (window.confirm('Are you sure?')) {
         await this.axios.post(
-          `http://localhost:1323/tournaments/${this.tournamentId}/match/set-result`,
+          `tournaments/${this.tournamentId}/match/set-result`,
           {
             matchId: this.editMatch.id,
             isDraw: true

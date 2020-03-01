@@ -150,7 +150,7 @@ export default {
         name: g.groupName,
         teams: g.teams.map(t => t.id)
       }))
-      await this.axios.post(`http://localhost:1323/tournaments/${this.tournament.id}/groups`, groupDtos)
+      await this.axios.post(`tournaments/${this.tournament.id}/groups`, groupDtos)
       this.$emit('save')
     }
   }

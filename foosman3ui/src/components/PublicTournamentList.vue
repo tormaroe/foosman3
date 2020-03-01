@@ -29,7 +29,7 @@ export default {
   methods: {
     load: function () {
       const self = this
-      this.axios.get('http://localhost:1323/tournaments').then(function (res) {
+      this.axios.get('tournaments').then(function (res) {
         self.tournaments = res.data
       })
     }

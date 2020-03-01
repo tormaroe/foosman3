@@ -10,6 +10,7 @@ import './lib/filters'
 
 Vue.config.productionTip = false
 
+axios.defaults.baseURL = process.env.VUE_APP_API
 axios.interceptors.response.use(
   function (response) { return response },
   function (error) {

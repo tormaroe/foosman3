@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     load: async function () {
-      const res = await this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/in-progress`)
+      const res = await this.axios.get(`tournaments/${this.id}/matches/in-progress`)
       this.inProgress = res.data
     },
     selectMatch: function (m) {
@@ -88,7 +88,7 @@ export default {
       }
     },
     confirmResult: async function () {
-      await this.axios.post(`http://localhost:1323/tournaments/${this.id}/match/set-result`, this.selectedResult)
+      await this.axios.post(`tournaments/${this.id}/match/set-result`, this.selectedResult)
       this.cancel()
       await this.load()
     }

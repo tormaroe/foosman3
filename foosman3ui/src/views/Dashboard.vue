@@ -83,8 +83,8 @@ export default {
   methods: {
     load: function () {
       let self = this
-      const inProgressRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/in-progress`)
-      const scheduledRequest = this.axios.get(`http://localhost:1323/tournaments/${this.id}/matches/scheduled`)
+      const inProgressRequest = this.axios.get(`tournaments/${this.id}/matches/in-progress`)
+      const scheduledRequest = this.axios.get(`tournaments/${this.id}/matches/scheduled`)
       this.axios.all([inProgressRequest, scheduledRequest]).then(this.axios.spread(function (inProgressRes, scheduledRes) {
         self.inProgress = inProgressRes.data
         self.scheduled = scheduledRes.data

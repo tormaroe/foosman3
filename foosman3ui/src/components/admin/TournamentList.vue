@@ -63,13 +63,13 @@ export default {
   methods: {
     load: function () {
       const self = this
-      this.axios.get('http://localhost:1323/tournaments').then(function (res) {
+      this.axios.get('tournaments').then(function (res) {
         self.tournaments = res.data
       })
     },
     addTournament: async function () {
       // TODO: Validation
-      await this.axios.post('http://localhost:1323/tournaments', this.newTournament)
+      await this.axios.post('tournaments', this.newTournament)
       this.newTournament.name = ''
       await this.load()
     }
