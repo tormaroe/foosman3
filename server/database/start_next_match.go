@@ -21,20 +21,26 @@ func NewStartMatchChan() chan *core.StartNextMatchRequest {
 
 func doNextMatch(req *core.StartNextMatchRequest) {
 	var match Match
-	if err := req.FoosmanContext.DB.Where(
+	queryResult := req.FoosmanContext.DB.Where(
 		"state = ?", int(core.Scheduled),
 	).Order(
 		"sequence asc",
-	).First(&match).Error; err != nil {
-		log.Fatal(err)
-	}
+	).First(&match)
 
-	if match.ID < 1 {
+	if queryResult.RecordNotFound() {
 		log.Println("No more scheduled matches")
 		return
 	}
 
-	// TODO: Assign table
+	if queryResult.Error != nil {
+		log.Fatal(queryResult.Error)
+	}
+
+	// TODO: I believe the following test will never be true
+	if match.ID < 1 {
+		log.Println("No more scheduled matches")
+		return
+	}
 
 	match.State = int(core.InProgress)
 	match.Table = req.Table
