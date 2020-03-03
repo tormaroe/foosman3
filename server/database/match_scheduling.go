@@ -9,6 +9,8 @@ import (
 	"github.com/tormaroe/foosman3/server/core"
 )
 
+// Refactor to actor pattern https://www.appdynamics.com/blog/engineering/three-productive-go-patterns-put-radar/
+
 func NewScheduleChan() chan *core.ScheduleRequest {
 	scheduleChan := make(chan *core.ScheduleRequest, 0)
 	go func() {
