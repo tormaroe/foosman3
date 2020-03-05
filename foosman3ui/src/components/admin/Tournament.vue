@@ -17,18 +17,19 @@
       class="pure-button pure-button-primary"
       style="float: right;margin-left:5px;">Teams</button>
     <button
+      v-show="tournament.state === 0"
       type="button"
       @click="startTournament"
       class="pure-button pure-button-primary"
       style="float: right;margin-left:5px;">START TOURNAMENT</button>
     <button
-      v-show="mode !== 'matches'"
+      v-show="tournament.state !== 0 && mode !== 'matches'"
       type="button"
       @click="mode = 'matches'"
       class="pure-button pure-button-primary"
       style="float: right;margin-left:5px;">Matches</button>
     <button
-      v-show="mode !== 'groups'"
+      v-show="tournament.state === 0 && mode !== 'groups'"
       type="button"
       @click="mode = 'groups'"
       class="pure-button pure-button-primary"
@@ -44,6 +45,7 @@
         <input id="tTableCount" type="number" v-model="tournament.tableCount">
         <button
           type="button"
+          :disabled="tournament.state !== 0"
           @click="updateTournament"
           class="pure-button pure-button-primary"
           style="margin-left:10px;">
@@ -234,9 +236,11 @@ export default {
     },
     startTournament: async function () {
       if (confirm('Are all teams registered and placed in groups? Then you may start the tournament..')) {
-        await this.axios.post(`tournaments/${this.id}/start`)
-        alert('Tournament started')
-        this.$router.push({ path: `/tournament/${this.id}` })
+        const res = await this.axios.post(`tournaments/${this.id}/start`)
+        if (res !== undefined) {
+          alert('Tournament started')
+          this.$router.push({ path: `/tournament/${this.id}` })
+        }
       }
     }
   }
