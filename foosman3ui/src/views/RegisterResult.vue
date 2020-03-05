@@ -1,5 +1,6 @@
 <template>
   <div class="regres-content">
+    <div style="margin-bottom:14px"><a :href="'#/tournament/' + id">&laquo; Tournament overview</a></div>
     <template v-if="selectedResult">
       <p>
         Please confirm result:
