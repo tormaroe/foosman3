@@ -31,7 +31,7 @@ func SetResult(c echo.Context) error {
 		return err
 	}
 
-	ac.SetResultMux.Lock() // TODO: Am I using this everywhere it's needed?
+	ac.SetResultMux.Lock()
 	defer ac.SetResultMux.Unlock()
 
 	setResult(ac, tournamentID, *req)

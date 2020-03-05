@@ -38,6 +38,9 @@ func ResetTournament(c echo.Context) error {
 		})
 	}
 
+	ac.SetResultMux.Lock()
+	defer ac.SetResultMux.Unlock()
+
 	err = ac.DB.Transaction(func(tx *gorm.DB) error {
 
 		if err := deleteTournamentMatches(tx, tournamentID); err != nil {

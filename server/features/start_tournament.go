@@ -29,6 +29,9 @@ func StartTournament(c echo.Context) error {
 		return err
 	}
 
+	ac.SetResultMux.Lock()
+	defer ac.SetResultMux.Unlock()
+
 	if err := ac.DB.Transaction(generateMatches(t)); err != nil {
 		return err
 	}

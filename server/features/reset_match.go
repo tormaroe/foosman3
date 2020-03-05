@@ -22,6 +22,9 @@ func ResetMatch(c echo.Context) error {
 		return err
 	}
 
+	ac.SetResultMux.Lock()
+	defer ac.SetResultMux.Unlock()
+
 	ac.DB.Transaction(func(tx *gorm.DB) error {
 
 		var results []database.MatchResult
