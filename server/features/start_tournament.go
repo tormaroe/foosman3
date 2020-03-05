@@ -25,15 +25,9 @@ func StartTournament(c echo.Context) error {
 	// TODO: Assert no un-grouped teams
 
 	var t database.Tournament
-	if err := ac.DB.First(&t, tournamentID).Error; err != nil {
+	if err := ac.DB.Preload("Groups").First(&t, tournamentID).Error; err != nil {
 		return err
 	}
-
-	var groups []database.Group
-	if err := ac.DB.Model(&t).Related(&groups).Error; err != nil {
-		return err
-	}
-	t.Groups = groups
 
 	if err := ac.DB.Transaction(generateMatches(t)); err != nil {
 		return err

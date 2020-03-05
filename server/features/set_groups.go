@@ -67,7 +67,7 @@ func deleteAllGroups(tx *gorm.DB, tournamentID int) error {
 		return err
 	}
 
-	return tx.Delete(&database.Group{}, "tournament_id", tournamentID).Error
+	return tx.Delete(&database.Group{}, "tournament_id = ?", tournamentID).Error
 }
 
 func makeGroup(tx *gorm.DB, tournamentID int, name string) (int, error) {

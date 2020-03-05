@@ -22,7 +22,9 @@ func NewStartMatchChan() chan *core.StartNextMatchRequest {
 func doNextMatch(req *core.StartNextMatchRequest) {
 	var match Match
 	queryResult := req.FoosmanContext.DB.Where(
-		"state = ?", int(core.Scheduled),
+		"tournament_id = ? and state = ?",
+		req.TournamentID,
+		int(core.Scheduled),
 	).Order(
 		"sequence asc",
 	).First(&match)
