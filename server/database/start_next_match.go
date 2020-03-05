@@ -31,6 +31,25 @@ func doNextMatch(req *core.StartNextMatchRequest) {
 
 	if queryResult.RecordNotFound() {
 		log.Println("No more scheduled matches")
+
+		// If tournament state == GroupPlayStarted,
+		// set state = GroupPlayDone
+		err := req.FoosmanContext.DB.Exec(
+			`
+			UPDATE tournaments 
+			SET state = ?
+			WHERE state = ?
+			  AND id = ?
+			`,
+			int(core.GroupPlayDone),
+			int(core.GroupPlayStarted),
+			req.TournamentID,
+		).Error
+
+		if err != nil {
+			log.Printf("ERROR setting tournament to GroupPlayDone")
+		}
+
 		return
 	}
 

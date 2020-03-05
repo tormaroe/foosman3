@@ -5,6 +5,7 @@ type TournamentState int
 const (
 	New TournamentState = iota
 	GroupPlayStarted
+	GroupPlayDone
 	EliminationPlayStarted
 	Done
 )

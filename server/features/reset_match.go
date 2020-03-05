@@ -90,6 +90,24 @@ func ResetMatch(c echo.Context) error {
 			return err
 		}
 
+		// If tournament state == GroupPlayDone,
+		// set state = GroupPlayStarted
+		err := tx.Exec(
+			`
+			UPDATE tournaments 
+			SET state = ?
+			WHERE state = ?
+			  AND id = ?
+			`,
+			int(core.GroupPlayStarted),
+			int(core.GroupPlayDone),
+			match.TournamentID,
+		).Error
+
+		if err != nil {
+			log.Printf("ERROR setting tournament to GroupPlayStarted")
+		}
+
 		return nil
 	})
 

@@ -35,6 +35,7 @@
       class="pure-button pure-button-primary"
       style="float: right">Groups</button>
     <h3>Tournament: {{ tournament.name }}</h3>
+    <div>{{ tournament.state | tournament-state }}</div>
     <hr>
 
     <form class="pure-form">

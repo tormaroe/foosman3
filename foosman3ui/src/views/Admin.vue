@@ -1,6 +1,5 @@
 <template>
   <div id="admincontainer">
-    <h1>Admin</h1>
     <router-view />
   </div>
 </template>
