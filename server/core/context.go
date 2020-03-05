@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
+	"github.com/tormaroe/foosman3/server/dblog"
 )
 
 type FoosmanContext struct {
@@ -40,4 +42,12 @@ func (ac *FoosmanContext) GetParamID() (int, error) {
 		return 0, ac.NoContent(http.StatusBadRequest)
 	}
 	return tID, nil
+}
+
+func (c FoosmanContext) Log(tournamentID int, message string) {
+	c.DB.Create(&dblog.Message{
+		TournamentID: tournamentID,
+		Timestamp:    time.Now(),
+		Text:         message,
+	})
 }

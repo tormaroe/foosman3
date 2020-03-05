@@ -43,6 +43,11 @@ func setResult(c *core.FoosmanContext, tournamentID int, req setResultRequest) e
 
 	log.Printf("Register results for match %d", req.MatchID)
 
+	// c.Log(
+	// 	tournamentID,
+	// 	fmt.Sprintf("Register match result for match id %d", req.MatchID, req.WinnerID),
+	// )
+
 	// Load match
 	var match database.Match
 	if err := c.DB.First(&match, req.MatchID).Error; err != nil {
