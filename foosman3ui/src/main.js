@@ -17,6 +17,7 @@ axios.interceptors.response.use(
     if (error.response) {
       alert(error.response.data.message)
     }
+    return undefined
   })
 Vue.use(VueAxios, axios)
 

@@ -2,6 +2,7 @@ package features
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -23,6 +24,19 @@ func StartTournament(c echo.Context) error {
 	}
 
 	// TODO: Assert no un-grouped teams
+	var ungroupedCount int
+	if err := ac.DB.Model(database.Team{}).Where(
+		"tournament_id = ? AND group_id = 0",
+		tournamentID,
+	).Count(&ungroupedCount).Error; err != nil {
+		return err
+	}
+	if ungroupedCount > 0 {
+		log.Println("Can't start tournament when some teams are ungrouped")
+		return c.JSON(http.StatusConflict, map[string]string{
+			"message": "Can't start tournament when some teams are ungrouped.",
+		})
+	}
 
 	var t database.Tournament
 	if err := ac.DB.Preload("Groups").First(&t, tournamentID).Error; err != nil {
@@ -39,7 +53,7 @@ func StartTournament(c echo.Context) error {
 	done := database.ScheduleUpcoming(ac, t.ID, t.TableCount)
 	done.Wait() // Block until initial scheduling done
 
-	// TODO: Start group play (Starts TableCount matches, which again schedules new matches)
+	// Start group play (Starts TableCount matches, which again schedules new matches)
 	for i := 0; i < t.TableCount; i++ {
 		table := fmt.Sprintf("Table %d", i+1)
 		done = database.StartNextMatch(ac, tournamentID, table)
