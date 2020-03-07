@@ -46,6 +46,28 @@
       </tbody>
     </table>
 
+    <template v-for="(matches, tier) in elimination">
+      <table :key="'elim' + tier" class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
+        <thead>
+          <tr>
+            <th colspan=2 style="text-align:center">
+              {{ tier | playoff-tier }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="m in matches" :key="m.id">
+            <td :class="elimClass(m, m.team1_id)">
+              <a :href="'#/team/' + m.team1_id">{{ m.Team1.name }}</a>
+            </td>
+            <td :class="elimClass(m, m.team2_id)">
+              <a :href="'#/team/' + m.team2_id">{{ m.Team2.name }}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+
     <template v-for="g in tournament.groups">
       <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;" :key="g.id">
         <thead>
@@ -108,7 +130,8 @@ export default {
     return {
       tournament: null,
       inProgress: [],
-      scheduled: []
+      scheduled: [],
+      elimination: []
     }
   },
   watch: {
@@ -127,12 +150,14 @@ export default {
       const scoresRequest = this.axios.get(`tournaments/${this.id}/scores`)
       const inProgressRequest = this.axios.get(`tournaments/${this.id}/matches/in-progress`)
       const scheduledRequest = this.axios.get(`tournaments/${this.id}/matches/scheduled`)
+      const elimRequest = this.axios.get(`tournaments/${this.id}/elimination-matches`)
       this.axios
-        .all([tournamentRequest, scoresRequest, inProgressRequest, scheduledRequest])
-        .then(this.axios.spread(function (tournamentRes, scoresRes, inProgressRes, scheduledRes) {
+        .all([tournamentRequest, scoresRequest, inProgressRequest, scheduledRequest, elimRequest])
+        .then(this.axios.spread(function (tournamentRes, scoresRes, inProgressRes, scheduledRes, elimRes) {
           self.tournament = tournamentRes.data
           self.inProgress = inProgressRes.data
           self.scheduled = scheduledRes.data
+          self.elimination = self._.groupBy(elimRes.data, 'playoff_tier')
 
           const scores = scoresRes.data
           self.tournament.teams.forEach(t => {
@@ -149,6 +174,13 @@ export default {
         ['stats.Points', 'stats.Wins'],
         ['desc', 'desc']
       )
+    },
+    elimClass: function (m, teamId) {
+      const res = m.MatchResults[m.MatchResults[0].TeamID === teamId ? 0 : 1]
+      return {
+        winner: res.Win > 0,
+        eliminated: res.Loss > 0
+      }
     }
   }
 }
@@ -163,5 +195,11 @@ th {
 }
 td {
   font-size:12px;
+}
+.eliminated {
+  text-decoration: line-through;
+}
+.winner {
+  font-weight: bold;
 }
 </style>

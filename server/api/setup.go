@@ -60,7 +60,9 @@ func Init(
 	e.POST("/tournaments/:id/groups", features.SetGroups)
 
 	e.POST("/tournaments/:id/start", features.StartTournament)
+	e.POST("/tournaments/:id/start-elimination", features.StartElimination)
 	e.GET("/tournaments/:id/matches", features.GetTournamentMatches)
+	e.GET("/tournaments/:id/elimination-matches", features.GetEliminationMatches)
 	e.GET("/tournaments/:id/scores", features.GetTournamentScores)
 	e.POST("/matches/:id/reset", features.ResetMatch)
 

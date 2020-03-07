@@ -14,6 +14,10 @@
         <td><b>{{stats.points}}</b></td>
       </tr>
       <tr>
+        <td>Group score</td>
+        <td>{{stats.groupPoints}}</td>
+      </tr>
+      <tr>
         <td>Games Won</td>
         <td>{{stats.wins}}</td>
       </tr>
@@ -36,7 +40,7 @@
             Opponent
           </th>
           <th style="text-align:right">
-            Pt
+            Result
           </th>
         </tr>
       </thead>
@@ -51,8 +55,11 @@
           <td>
             <a :href="'#/team/' + m.Opponent.id">{{m.Opponent.name}}</a>
           </td>
-          <td style="text-align:right">
+          <td style="text-align:right" v-if="m.playoff_tier == 0">
             {{ m | matchPoints }}
+          </td>
+          <td style="text-align:right" v-else>
+            {{ m.playoff_tier | playoff-tier }} {{ m.MatchResults | resultText }}
           </td>
         </tr>
       </tbody>
@@ -84,6 +91,7 @@ export default {
       teamdata: null,
       stats: {
         points: 0,
+        groupPoints: 0,
         wins: 0,
         draws: 0,
         losses: 0
@@ -106,6 +114,7 @@ export default {
 
       this.stats = {
         points: 0,
+        groupPoints: 0,
         wins: 0,
         draws: 0,
         losses: 0
@@ -122,6 +131,7 @@ export default {
           m.Opponent = m.Team1
         }
         self.stats.points += m.MatchResults.Points
+        self.stats.groupPoints += m.groupId > 0 ? m.MatchResults.Points : 0
         self.stats.wins += m.MatchResults.Win
         self.stats.draws += m.MatchResults.Draw
         self.stats.losses += m.MatchResults.Loss
@@ -133,9 +143,21 @@ export default {
   filters: {
     matchPoints: function (m) {
       if (m.state === 3) {
-        return m.MatchResults.Points
+        return m.MatchResults.Points + ' pt.'
       }
       return ''
+    },
+    resultText: function (res) {
+      if (res.Win > 0) {
+        return 'won'
+      }
+      if (res.Loss > 0) {
+        return 'lost'
+      }
+      if (res.Draw > 0) {
+        return 'draw'
+      }
+      return '?'
     }
   }
 }

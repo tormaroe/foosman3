@@ -29,6 +29,12 @@
       class="pure-button pure-button-primary"
       style="float: right;margin-left:5px;">Matches</button>
     <button
+      v-show="tournament.state >= 2 && mode !== 'elimination'"
+      type="button"
+      @click="mode = 'elimination'"
+      class="pure-button pure-button-primary"
+      style="float: right;margin-left:5px;">Elimination</button>
+    <button
       v-show="tournament.state === 0 && mode !== 'groups'"
       type="button"
       @click="mode = 'groups'"
@@ -64,6 +70,10 @@
       v-if="mode === 'groups'"
       :tournament="tournament"
       @save="groupsSave"
+      />
+    <elimination
+      v-if="mode === 'elimination'"
+      :tournament="tournament"
       />
 
     <div v-show="mode === 'default'" class="pure-g">
@@ -129,11 +139,13 @@
 <script>
 import Groups from './Groups.vue'
 import Matches from './Matches.vue'
+import Elimination from './Elimination.vue'
 
 export default {
   components: {
     Groups,
-    Matches
+    Matches,
+    Elimination
   },
   props: {
     id: {

@@ -29,18 +29,20 @@ type Group struct {
 }
 
 type Match struct {
-	ID           int `json:"id"`
-	Team1        Team
-	Team1ID      int `json:"team1_id"`
-	Team2        Team
-	Team2ID      int `json:"team2_id"`
-	TournamentID int
-	GroupID      int `json:"groupId"`
-	Group        Group
-	Table        string `json:"table"`
-	State        int    `json:"state"` // TODO: use typed constant?
-	Sequence     int
-	MatchResults []MatchResult
+	ID                 int `json:"id"`
+	Team1              Team
+	Team1ID            int `json:"team1_id"`
+	Team2              Team
+	Team2ID            int `json:"team2_id"`
+	TournamentID       int
+	GroupID            int `json:"groupId"`
+	Group              Group
+	Table              string `json:"table"`
+	State              int    `json:"state"` // TODO: use typed constant?
+	Sequence           int
+	PlayoffTier        int `json:"playoff_tier"`         // 1, 2, 4, 8, 16, ...
+	PlayoffMatchNumber int `json:"playoff_match_number"` // Number within the tier
+	MatchResults       []MatchResult
 }
 
 type MatchResult struct {

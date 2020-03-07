@@ -57,6 +57,7 @@
           <th>Team 2</th>
           <th>Result</th>
           <th>Group</th>
+          <th>Elim</th>
           <th>Table</th>
           <th>State</th>
           <th>&nbsp;</th>
@@ -69,8 +70,10 @@
           <td>{{ m.Team2.name }}</td>
           <td>{{ m | resultDescription }}</td>
           <td>{{ m.Group.name }}</td>
+          <td v-if="m.playoff_tier > 0">{{ m.playoff_tier }} ({{ m.playoff_match_number }})</td>
+          <td v-else>&nbsp;</td>
           <td>{{ m.table }}</td>
-          <td>{{ m.state }}</td>
+          <td>{{ m.state | match-state }}</td>
           <td>
             <button v-if="m.state === 3" @click="edit(m)" class="pure-button" style="background-color:orange" title="Fix match">Fix</button>
           </td>
@@ -168,9 +171,9 @@ export default {
         it2 = 0
       }
       if (match.MatchResults[it1].Win > 0) {
-        return 'Winner: Team 1'
+        return 'Home'
       } else if (match.MatchResults[it2].Win > 0) {
-        return 'Winner: Team 2'
+        return 'Away'
       } else {
         return 'Draw'
       }

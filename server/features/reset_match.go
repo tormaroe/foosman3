@@ -71,9 +71,9 @@ func ResetMatch(c echo.Context) error {
 
 		if inProgressCount > 0 {
 
-			var maxSequence []int
+			var maxSequence []struct{ Value int }
 			if err := tx.Raw(
-				"SELECT MAX(sequence) FROM matches WHERE tournament_id = ?",
+				"SELECT MAX(sequence) as value FROM matches WHERE tournament_id = ?",
 				match.TournamentID,
 			).Scan(&maxSequence).Error; err != nil {
 				return err
@@ -81,7 +81,7 @@ func ResetMatch(c echo.Context) error {
 
 			match.Table = ""
 			match.State = int(core.Scheduled)
-			match.Sequence = maxSequence[0] + 1
+			match.Sequence = maxSequence[0].Value + 1
 		} else {
 			match.State = int(core.InProgress)
 		}
@@ -106,6 +106,24 @@ func ResetMatch(c echo.Context) error {
 
 		if err != nil {
 			log.Printf("ERROR setting tournament to GroupPlayStarted")
+		}
+
+		// If tournament state == Done,
+		// set state = ElimPlayStarted
+		err = tx.Exec(
+			`
+			UPDATE tournaments 
+			SET state = ?
+			WHERE state = ?
+			  AND id = ?
+			`,
+			int(core.EliminationPlayStarted),
+			int(core.Done),
+			match.TournamentID,
+		).Error
+
+		if err != nil {
+			log.Printf("ERROR setting tournament to EliminationPlayStarted")
 		}
 
 		return nil

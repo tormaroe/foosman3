@@ -31,7 +31,7 @@ func GetMatchesScheduled(c echo.Context) error {
 	).Select(
 		"matches.id, t1.id as team1_id, t1.name as team1_name, t2.id as team2_id, t2.name as team2_name, g.name as group_name, matches.[sequence]",
 	).Joins(
-		"join groups g on g.id = matches.group_id",
+		"left join groups g on g.id = matches.group_id",
 	).Joins(
 		"join teams t1 on t1.id = matches.team1_id",
 	).Joins(

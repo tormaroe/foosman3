@@ -25,7 +25,7 @@
       <div class="result" @click="setWinner(selectedMatch.team2Id, selectedMatch.team2Name)">
         {{ selectedMatch.team2Name }} won!
       </div>
-      <div class="result" @click="setDraw()">
+      <div class="result" @click="setDraw()" v-show="selectedMatch.groupName != ''">
         Draw!
       </div>
     </template>
