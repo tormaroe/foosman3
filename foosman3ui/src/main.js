@@ -5,6 +5,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueDraggable from 'vue-draggable'
 import VueLodash from 'vue-lodash'
+import lodash from 'lodash'
 import 'vue-material-design-icons/styles.css'
 import './lib/filters'
 
@@ -23,7 +24,7 @@ Vue.use(VueAxios, axios)
 
 Vue.use(VueDraggable)
 
-Vue.use(VueLodash)
+Vue.use(VueLodash, { lodash: lodash })
 
 new Vue({
   router,
