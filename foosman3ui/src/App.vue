@@ -5,6 +5,16 @@
       <router-link to="/admin"><cogs-icon /> Admin</router-link>
     </div>
     <router-view/>
+    <hr class="hr-footer">
+    <div class="footer">
+      <p>
+        <b>Foosman v3</b>
+        Copyright 2020 Torbjørn Marø
+      </p>
+      <p>
+        Powered by Go, Vue, Docker, SQLite, Linode, and lots of love for programming and foosball.
+      </p>
+    </div>
   </div>
 </template>
 
@@ -22,22 +32,42 @@ export default {
 
 <style>
 body {
-  background-color: #f5fff6;
+  background-color: #FFFFFF;
 }
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #243325;
+  color: #000000;
+}
+
+.hr-footer {
+  border: solid 1px #E9E9E9;
+  margin-left:10px;
+  margin-right:10px;
+  margin-top: 50px;
+  margin-bottom:10px;
+}
+
+.footer {
+  margin-left:10px;
+  margin-right:10px;
+  color: #969696;
+  font-size: 12px;
 }
 
 th {
-  background-color: #97e69f;
+  background-color: #E9E9E9;
+}
+
+tr {
+  background-color: #F9F9F9;
 }
 
 #nav {
-  padding: 30px;
+  padding: 20px;
+  background-color: #E9E9E9;
 }
 
 #nav a {
@@ -46,18 +76,18 @@ th {
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #47A8DE;
 }
 
 /* unvisited link */
 a:link {
-  color: #3f9148;
+  color: #47A8DE;
   text-decoration: none;
 }
 
 /* visited link */
 a:visited {
-  color: #3f9148;
+  color: #47a8de;
 }
 
 /* mouse over link */
@@ -67,6 +97,6 @@ a:hover {
 
 /* selected link */
 a:active {
-  color: #3f9148;
+  color: #47A8DE;
 }
 </style>
