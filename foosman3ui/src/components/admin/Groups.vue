@@ -1,21 +1,23 @@
 <template>
   <div>
-    <p>
+    <div style="margin-bottom:10px;">
       Group count: {{ groups.length }}
       <button class="pure-button" @click="decGroupCount()">-</button>
       <button class="pure-button" @click="incGroupCount()">+</button>
       |
+      <input type="range" min="50" max="1000" v-model="groupBoxWidth" class="slider">
+      |
       <button class="pure-button" @click="distribute()">Auto distribute</button>
       |
       <button class="pure-button pure-button-primary" @click="save()">Save</button>
-    </p>
+    </div>
     <div v-drag-and-drop:options="options" class="drag-wrapper">
       <div>
         <div>
           <b>Ungrouped</b><br>
           Count: {{availableTeams.length}}
         </div>
-        <ul style="background: pink">
+        <ul class="pink" :style="groupBoxStyle">
           <li
             v-for="t in availableTeams"
             :key="t.id"
@@ -33,6 +35,7 @@
         Count: {{g.teams.length}}
       </div>
       <ul
+        :style="groupBoxStyle"
         :data-idx="idx"
         :data-group="true"
       >
@@ -62,6 +65,7 @@ export default {
     return {
       availableTeams: [],
       groups: [],
+      groupBoxWidth: 200,
       options: {
         // dropzoneSelector: 'ul',
         // draggableSelector: 'li',
@@ -90,6 +94,11 @@ export default {
           this.groups.push(group)
         })
       }
+    }
+  },
+  computed: {
+    groupBoxStyle: function () {
+      return `width:${this.groupBoxWidth}px;`
     }
   },
   methods: {
@@ -159,17 +168,20 @@ export default {
 
 <style scoped>
 
+.pink {
+  background: pink;
+}
+
 .drag-wrapper {
   display: flex;
-  justify-content: center;
 }
 
 ul {
   display: flex;
   flex-direction: column;
   padding: 3px !important;
-  min-height: 70vh;
-  width: 110px;
+  min-height: 50vh;
+  width: 210px;
   float:left;
   list-style-type:none;
   overflow-y:auto;
