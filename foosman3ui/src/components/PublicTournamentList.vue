@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+    <img class="center" style="height:200px;width:200px;" src="../assets/foosmanlogo.png" />
         <table class="pure-table pure-table-horizontal" style="width:99%">
           <thead>
             <tr>
@@ -52,5 +53,11 @@ li {
 }
 a {
   color: #42b983;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
 }
 </style>
