@@ -1,6 +1,12 @@
 <template>
   <div class="dash-content">
 
+    <div class="pure-g" v-if="flash">
+      <div class="pure-u-1-1 flash">
+        {{ flash.Raw }}
+      </div>
+    </div>
+
     <div class="pure-g">
       <div class="pure-u-1-2">
 
@@ -72,6 +78,7 @@ export default {
   },
   data: function () {
     return {
+      flash: null,
       inProgress: [],
       scheduled: []
     }
@@ -83,9 +90,11 @@ export default {
   methods: {
     load: function () {
       let self = this
+      const dashboardRequest = this.axios.get(`tournaments/${this.id}/dashboard`)
       const inProgressRequest = this.axios.get(`tournaments/${this.id}/matches/in-progress`)
       const scheduledRequest = this.axios.get(`tournaments/${this.id}/matches/scheduled`)
-      this.axios.all([inProgressRequest, scheduledRequest]).then(this.axios.spread(function (inProgressRes, scheduledRes) {
+      this.axios.all([dashboardRequest, inProgressRequest, scheduledRequest]).then(this.axios.spread(function (dashboardRes, inProgressRes, scheduledRes) {
+        self.flash = dashboardRes.data
         self.inProgress = inProgressRes.data
         self.scheduled = scheduledRes.data
       }))
@@ -98,20 +107,24 @@ export default {
 body {
   background-color: #1d2024;
 }
-tr {
-  background-color: black;
-}
-tr {
-  border-color: red;
+.flash {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  padding-left: 30px;
+  padding-right: 30px;
+  font-weight: bold;
+  font-size: 18px;
+  font-family: 'Press Start 2P';
+  text-align: center;
 }
 th {
   font-family: 'Press Start 2P';
   font-size: 16px !important;
   color: greenyellow;
+  background-color: black;
 }
 td {
   font-size: 14px !important;
-  color: white;
 }
 .dash-content {
   margin: 8px;
