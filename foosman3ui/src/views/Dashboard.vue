@@ -80,12 +80,16 @@ export default {
     return {
       flash: null,
       inProgress: [],
-      scheduled: []
+      scheduled: [],
+      intervalId: null
     }
   },
   mounted: function () {
     this.load()
-    window.setInterval(this.load, 8000)
+    this.intervalId = window.setInterval(this.load, 8000)
+  },
+  beforeDestroy: function () {
+    window.clearInterval(this.intervalId)
   },
   methods: {
     load: function () {
