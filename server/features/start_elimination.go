@@ -1,9 +1,10 @@
 package features
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"net/http"
+	"sort"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
@@ -62,7 +63,118 @@ func StartElimination(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func getGroupedTeamOrder(db *gorm.DB, tournamentID int) (map[int][]int, error) {
+type groupTeamPoints struct {
+	GroupID int
+	TeamID  int
+	Points  int
+}
+
+type groupTeamPointsCollection struct {
+	gtpMap      map[int][]groupTeamPoints
+	teamsFilled int
+}
+
+func newGroupTeamPointsCollection(gtps []groupTeamPoints) groupTeamPointsCollection {
+	m := make(map[int][]groupTeamPoints)
+	currGroupID := -1
+	gIdx := -1
+	for _, pd := range gtps {
+		if pd.GroupID != currGroupID {
+			gIdx++
+			m[gIdx] = []groupTeamPoints{}
+			currGroupID = pd.GroupID
+		}
+		m[gIdx] = append(m[gIdx], pd)
+	}
+	return groupTeamPointsCollection{gtpMap: m}
+}
+
+func (gtpColl *groupTeamPointsCollection) groupCount() int {
+	return len(gtpColl.gtpMap)
+}
+
+func (gtpColl *groupTeamPointsCollection) fillMatches(ms *[]database.Match) error {
+	mCount := len(*ms)
+	grCount := gtpColl.groupCount()
+	teamsGoal := mCount * 2
+	currentPlaceIdx := 0
+
+	for teamsGoal > gtpColl.teamsFilled { // ! DANGER: May loop forever if too few teams
+		tempGtps := gtpColl.getTeamsByPlace(currentPlaceIdx)
+		missingCount := teamsGoal - gtpColl.teamsFilled
+		if missingCount >= grCount {
+			start := 0
+			if currentPlaceIdx%2 == 1 {
+				start = mCount / 2
+			}
+			if err := addTeamsToMatches(ms, tempGtps, start); err != nil {
+				return err
+			}
+			currentPlaceIdx++
+			gtpColl.teamsFilled += grCount
+		} else {
+			sort.Slice(tempGtps, func(i, j int) bool {
+				return tempGtps[i].Points > tempGtps[j].Points
+			})
+			tempGtps = tempGtps[:missingCount]
+			if err := addTeamsToAnyMatches(ms, tempGtps); err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+
+	return nil
+}
+
+func (gtpColl *groupTeamPointsCollection) getTeamsByPlace(idx int) []groupTeamPoints {
+	grCount := gtpColl.groupCount()
+	tempGtps := make([]groupTeamPoints, grCount)
+	for gIdx := 0; gIdx < grCount; gIdx++ {
+		tempGtps[gIdx] = gtpColl.gtpMap[gIdx][idx]
+	}
+	return tempGtps
+}
+
+func addTeamsToMatches(ms *[]database.Match, gtps []groupTeamPoints, start int) error {
+	mIdx := start
+	msLen := len(*ms)
+	for gtpIdx := 0; gtpIdx < len(gtps); gtpIdx++ {
+		m := &(*ms)[mIdx]
+		if m.Team1ID == 0 {
+			m.Team1ID = gtps[gtpIdx].TeamID
+		} else if m.Team2ID == 0 {
+			m.Team2ID = gtps[gtpIdx].TeamID
+		} else {
+			return errors.New("Too few matches compared to groups")
+		}
+		mIdx++
+		if mIdx == msLen {
+			mIdx = 0
+		}
+	}
+	return nil
+}
+
+func addTeamsToAnyMatches(ms *[]database.Match, gtps []groupTeamPoints) error {
+	gtpIdx := 0
+	for mIdx := 0; mIdx < len(*ms); mIdx++ {
+		m := &(*ms)[mIdx]
+		if m.Team1ID == 0 {
+			m.Team1ID = gtps[gtpIdx].TeamID
+			gtpIdx++
+		} else if m.Team2ID == 0 {
+			m.Team2ID = gtps[gtpIdx].TeamID
+			gtpIdx++
+		}
+		if gtpIdx >= len(gtps) {
+			return nil // DONE
+		}
+	}
+	return errors.New("Unable to find matches for all playoff teams")
+}
+
+func loadGroupTeamPoints(db *gorm.DB, tournamentID int) ([]groupTeamPoints, error) {
 	q := `
 		select 
 			m.group_id, 
@@ -75,29 +187,11 @@ func getGroupedTeamOrder(db *gorm.DB, tournamentID int) (map[int][]int, error) {
 		group by r.team_id
 		order by m.group_id, points desc, rnd
 	`
-	var pointData []struct {
-		GroupID int
-		TeamID  int
-		Points  int
-	}
-	if err := db.Raw(q, tournamentID).Scan(&pointData).Error; err != nil {
+	var gtps []groupTeamPoints
+	if err := db.Raw(q, tournamentID).Scan(&gtps).Error; err != nil {
 		return nil, err
 	}
-
-	groupedOrderedTeams := make(map[int][]int)
-	currGroupID := -1
-	gIdx := -1
-	for _, pd := range pointData {
-		if pd.GroupID != currGroupID {
-			gIdx++
-			groupedOrderedTeams[gIdx] = []int{}
-			log.Printf("Setting key %d", gIdx)
-			currGroupID = pd.GroupID
-		}
-		groupedOrderedTeams[gIdx] = append(groupedOrderedTeams[gIdx], pd.TeamID)
-		log.Printf("gIdx: %d teamId: %d", gIdx, pd.TeamID)
-	}
-	return groupedOrderedTeams, nil
+	return gtps, nil
 }
 
 func createFirstTierElimMatches(db *gorm.DB, tournamentID int, inclTeamCnt int) error {
@@ -107,66 +201,22 @@ func createFirstTierElimMatches(db *gorm.DB, tournamentID int, inclTeamCnt int) 
 		return fmt.Errorf("Invalid elimination team count: %d", inclTeamCnt)
 	}
 
-	gto, err := getGroupedTeamOrder(db, tournamentID)
+	gtos, err := loadGroupTeamPoints(db, tournamentID)
 	if err != nil {
 		return err
 	}
-
-	teamsFoundCnt := 0
 	matches := make([]database.Match, tierMatchCnt)
-	matchIdx := 0
-	groupTier := 0 // winner, 1 = second place, and so on..
-	gIdx := 0
-	goingLeft := true
-
-	log.Printf("len(gto): %d", len(gto))
-
-	for teamsFoundCnt < inclTeamCnt {
-		log.Printf(
-			"gIdx:%d matchIdx:%d groupTier:%d",
-			gIdx,
-			matchIdx,
-			groupTier,
-		)
-
-		teamID := gto[gIdx][groupTier]
-		match := matches[matchIdx]
-
-		if goingLeft {
-			match.Team1ID = teamID
-		} else {
-			match.Team2ID = teamID
-		}
-		match.TournamentID = tournamentID
-		match.PlayoffTier = tierMatchCnt
-		match.PlayoffMatchNumber = matchIdx + 1
-		teamsFoundCnt++
-
-		gIdx++
-		if gIdx >= len(gto) {
-			gIdx = 0
-			groupTier++
-		}
-
-		matches[matchIdx] = match
-
-		if goingLeft {
-			matchIdx++
-			if matchIdx >= len(matches) {
-				matchIdx--
-				goingLeft = false
-			}
-		} else {
-			matchIdx--
-			if matchIdx < 0 && teamsFoundCnt != inclTeamCnt {
-				return fmt.Errorf("Loop issue")
-			}
-		}
+	gtoColl := newGroupTeamPointsCollection(gtos)
+	if err := gtoColl.fillMatches(&matches); err != nil {
+		return err
 	}
 
 	// Save matches w/ match results
 	for i := 0; i < len(matches); i++ {
 		match := matches[i]
+		match.TournamentID = tournamentID
+		match.PlayoffTier = tierMatchCnt
+		match.PlayoffMatchNumber = i + 1
 		if err := db.Create(&match).Error; err != nil {
 			return err
 		}
