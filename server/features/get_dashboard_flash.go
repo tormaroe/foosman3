@@ -50,6 +50,8 @@ func GetDashboardFlash(c echo.Context) error {
 
 		// X matches has been played so far
 
+		// Group play progress: X%
+
 	} else if tournament.State == int(core.GroupPlayDone) {
 
 	} else if tournament.State == int(core.EliminationPlayStarted) {
