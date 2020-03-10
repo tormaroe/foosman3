@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <div id="nav" v-show="!chromeless">
       <router-link to="/"><home-icon /> Home</router-link> |
       <router-link to="/admin"><cogs-icon /> Admin</router-link>
     </div>
     <router-view/>
-    <hr class="hr-footer">
-    <div class="footer">
+    <hr class="hr-footer" v-show="!chromeless">
+    <div class="footer" v-show="!chromeless">
       <p>
         <b>Foosman v3</b>
         Copyright 2020 Torbjørn Marø
@@ -26,6 +26,19 @@ export default {
   components: {
     HomeIcon,
     CogsIcon
+  },
+  data: function () {
+    return {
+      chromeless: false
+    }
+  },
+  watch: {
+    '$route.path': function (path) {
+      this.chromeless = path.startsWith('/dashboard')
+    }
+  },
+  mounted: function () {
+    this.chromeless = this.$route.path.startsWith('/dashboard')
   }
 }
 </script>

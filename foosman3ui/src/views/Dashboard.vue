@@ -8,12 +8,12 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1-2">
+      <div class="pure-u-1-2" v-show="inProgress.length > 0">
 
         <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
           <thead>
             <tr>
-              <th colspan="4" style="text-align:center">
+              <th colspan="3" style="text-align:center">
                 Matches in progress
               </th>
             </tr>
@@ -26,10 +26,7 @@
               <td>
                 {{ m.team1Name }}
               </td>
-              <td style="text-align:center;">
-                vs
-              </td>
-              <td style="text-align:right">
+              <td>
                 {{ m.team2Name }}
               </td>
             </tr>
@@ -37,12 +34,12 @@
         </table>
 
       </div>
-      <div class="pure-u-1-2">
+      <div class="pure-u-1-2" v-show="scheduled.length > 0">
 
         <table class="pure-table pure-table-horizontal" style="width:99%;margin-bottom:15px;">
           <thead>
             <tr>
-              <th colspan="3" style="text-align:center">
+              <th colspan="2" style="text-align:center">
                 Upcoming matches
               </th>
             </tr>
@@ -52,10 +49,7 @@
               <td>
                 {{ m.team1Name }}
               </td>
-              <td style="text-align:center;">
-                vs
-              </td>
-              <td style="text-align:right">
+              <td>
                 {{ m.team2Name }}
               </td>
             </tr>
@@ -108,28 +102,30 @@ export default {
 </script>
 
 <style scoped>
-body {
-  background-color: #1d2024;
-}
 .flash {
   padding-top: 50px;
   padding-bottom: 50px;
   padding-left: 30px;
   padding-right: 30px;
   font-weight: bold;
-  font-size: 20px;
-  font-family: 'Press Start 2P';
+  font-size: 24px;
+  font-family: 'Baloo Bhaina', cursive;
   text-align: center;
-  line-height: 28px;
+  line-height: 32px;
+}
+table {
+  border: none;
 }
 th {
-  font-family: 'Press Start 2P';
+  font-family: 'Baloo Bhaina', cursive;
   font-size: 16px !important;
-  color: greenyellow;
-  background-color: black;
+  background-color: white;
+  border-bottom: solid 1px black;
+  border-top:none;
 }
 td {
   font-size: 14px !important;
+  font-weight: bold;
 }
 .dash-content {
   margin: 8px;

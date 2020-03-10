@@ -33,17 +33,17 @@ const routes = [
         path: 'team/:id',
         component: PublicTeam,
         props: true
+      },
+      {
+        path: 'register-results/:id',
+        component: RegisterResult,
+        props: true
       }
     ]
   },
   {
     path: '/dashboard/:id',
     component: Dashboard,
-    props: true
-  },
-  {
-    path: '/register-results/:id',
-    component: RegisterResult,
     props: true
   },
   {
