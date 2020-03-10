@@ -2,6 +2,11 @@
   <div v-if="tournament">
     <button
       type="button"
+      @click="exportTournament"
+      class="pure-button pure-button-green"
+      style="float: right;margin-left:5px;">Export</button>
+    <button
+      type="button"
       @click="deleteTournament"
       class="pure-button pure-button-danger"
       style="float: right;margin-left:5px;">DELETE</button>
@@ -255,6 +260,9 @@ export default {
           this.$router.push({ path: `/tournament/${this.id}` })
         }
       }
+    },
+    exportTournament: function () {
+      window.location = this.axios.defaults.baseURL + `tournaments/${this.id}/export`
     }
   }
 }
@@ -268,6 +276,10 @@ label {
 }
 .pure-button-danger {
   background-color: red;
+  color: white;
+}
+.pure-button-green {
+  background-color: green;
   color: white;
 }
 </style>

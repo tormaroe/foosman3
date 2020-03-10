@@ -3,6 +3,7 @@ module github.com/tormaroe/foosman3/server
 go 1.13
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/golobby/config v1.0.1
 	github.com/google/go-cmp v0.4.0 // indirect

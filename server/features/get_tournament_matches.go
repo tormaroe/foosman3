@@ -15,10 +15,6 @@ type gTMResult struct {
 	GroupName string
 }
 
-// TODO: Test needed
-
-// ! Unused
-
 func GetTournamentMatches(c echo.Context) error {
 	ac := c.(*core.FoosmanContext)
 	tournamentID, err := ac.GetParamID()
