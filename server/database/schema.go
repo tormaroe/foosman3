@@ -1,5 +1,9 @@
 package database
 
+import "errors"
+
+import "github.com/tormaroe/foosman3/server/core"
+
 type Tournament struct {
 	ID         int     `json:"id"`
 	Name       string  `json:"name"`
@@ -63,3 +67,34 @@ type MatchResult struct {
 // 		message       text not null
 // 	);
 // `
+
+func (m Match) GetWinnerAndLooser() (Team, Team, bool, error) {
+	var winner Team
+	var looser Team
+	if m.State != int(core.Played) {
+		return winner, looser, false, errors.New("Match not played, can't get winner")
+	}
+	if len(m.MatchResults) < 2 {
+		return winner, looser, false, errors.New("Missing match results, can't get winner")
+	}
+	if m.MatchResults[0].Win == 1 {
+		if m.MatchResults[0].TeamID == m.Team1ID {
+			winner = m.Team1
+			looser = m.Team2
+		} else {
+			winner = m.Team2
+			looser = m.Team1
+		}
+	} else if m.MatchResults[1].Win == 1 {
+		if m.MatchResults[1].TeamID == m.Team1ID {
+			winner = m.Team1
+			looser = m.Team2
+		} else {
+			winner = m.Team2
+			looser = m.Team1
+		}
+	} else {
+		return winner, looser, true, nil // DRAW
+	}
+	return winner, looser, false, nil
+}

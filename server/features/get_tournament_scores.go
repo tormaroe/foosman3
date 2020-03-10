@@ -32,8 +32,6 @@ func GetTournamentScores(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, res, "  ")
 }
 
-// TODO: ONly include group matches. Fixed here, but elsewhere..
-
 func aggregateTournamentScores(db *gorm.DB, ID int) ([]teamScores, error) {
 	query := `
 		SELECT

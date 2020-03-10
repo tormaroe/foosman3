@@ -3,6 +3,7 @@ package features
 import (
 	"net/http"
 
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/tormaroe/foosman3/server/core"
 	"github.com/tormaroe/foosman3/server/database"
@@ -24,19 +25,22 @@ func GetTournamentMatches(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	var matches []database.Match
-	if err := ac.DB.Preload("MatchResults").Preload("Team1").Preload("Team2").Preload("Group").Where("tournament_id = ?", tournamentID).Order("sequence desc").Find(&matches).Error; err != nil {
+	matches, err := getTournamentMatches(ac.DB, tournamentID)
+	if err != nil {
 		return err
 	}
 
-	// var result []gTMResult
-	// ac.DB.
-	// 	Table("matches").
-	// 	Select("t1.name as team1, t2.name as team2, groups.name as group_name").
-	// 	Joins("join groups on groups.id = matches.group_id and groups.tournament_id = ?", tournamentID).
-	// 	Joins("left join teams t1 on t1.id = matches.team1_id").
-	// 	Joins("left join teams t2 on t2.id = matches.team2_id").
-	// 	Scan(&result)
-
 	return c.JSONPretty(http.StatusOK, matches, "  ")
+}
+
+func getTournamentMatches(db *gorm.DB, tournamentID int) ([]database.Match, error) {
+	var matches []database.Match
+	err := db.Preload("MatchResults").Preload("Team1").Preload("Team2").Preload("Group").Where("tournament_id = ?", tournamentID).Order("sequence desc").Find(&matches).Error
+	return matches, err
+}
+
+func getPlayedTournamentMatches(db *gorm.DB, tournamentID int) ([]database.Match, error) {
+	var matches []database.Match
+	err := db.Preload("MatchResults").Preload("Team1").Preload("Team2").Preload("Group").Where("tournament_id = ? and state = ?", tournamentID, int(core.Played)).Order("sequence desc").Find(&matches).Error
+	return matches, err
 }

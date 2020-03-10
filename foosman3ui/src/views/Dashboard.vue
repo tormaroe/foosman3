@@ -3,7 +3,7 @@
 
     <div class="pure-g" v-if="flash">
       <div class="pure-u-1-1 flash">
-        {{ flash.Raw }}
+        <span v-html="flash.Raw"></span>
       </div>
     </div>
 
@@ -117,9 +117,10 @@ body {
   padding-left: 30px;
   padding-right: 30px;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20px;
   font-family: 'Press Start 2P';
   text-align: center;
+  line-height: 28px;
 }
 th {
   font-family: 'Press Start 2P';
